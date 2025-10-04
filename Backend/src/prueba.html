@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel M&L</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPvknjEKZnYEEjST9vvrsFgzQSFFUziJyI3cyYuO506hk+6LCFTrWfqspP0anu6xjwuFg==" crossorigin="" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header,
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        nav {
+            background-color: #444;
+            color: white;
+            padding: 0.5em 0;
+        }
+
+        nav ul {
+            padding: 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        nav li {
+            display: inline;
+            margin: 0 1em;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .room {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .room img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        #mapid {
+            height: 300px;
+            border-radius: 4px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin-top: 10px;
+        }
+
+        form input,
+        form select,
+        form textarea {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        form button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Hotel M&L</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#habitaciones">Habitaciones</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#reservas">Reservas</a></li>
+            <li><a href="#consultas">Consultas</a></li>
+            <li><a href="#mapa">Mapa</a></li>
+            <li><a href="#admin">Administración</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="habitaciones">
+        <h2>Nuestras Habitaciones</h2>
+        <div class="room">
+            <img src="https://via.placeholder.com/400x200" alt="Habitación Estándar">
+            <h3>Habitación Estándar</h3>
+            <p>Cómoda habitación con cama doble, baño privado y TV.</p>
+            <p>Precio: $50000 por noche</p>
+        </div>
+        <div class="room">
+            <img src="https://via.placeholder.com/400x200" alt="Habitación Doble">
+            <h3>Habitación Doble</h3>
+            <p>Habitación con dos camas individuales, baño privado y TV.</p>
+            <p>Precio: $70000 por noche</p>
+        </div>
+        <div class="room">
+            <img src="https://via.placeholder.com/400x200" alt="Suite">
+            <h3>Suite</h3>
+            <p>Amplia suite con cama king-size, sala de estar, balcón y baño de hidromasaje.</p>
+            <p>Precio: $120000 por noche</p>
+        </div>
+    </div>
+
+    <div class="container" id="servicios">
+        <h2>Nuestros Servicios</h2>
+        <ul>
+            <li>Recepción 24 horas</li>
+            <li>Wi-Fi gratuito en todo el hotel</li>
+            <li>Desayuno buffet</li>
+            <li>Piscina al aire libre</li>
+            <li>Servicio de habitaciones</li>
+            <li>Gimnasio</li>
+            <li>Parking gratuito</li>
+        </ul>
+    </div>
+
+    <div class="container" id="reservas">
+        <h2>Realizar Reserva</h2>
+        <form id="reservaForm">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono">
+
+            <label for="habitacion">Tipo de Habitación:</label>
+            <select id="habitacion" name="habitacion">
+                <option value="estandar">Habitación Estándar</option>
+                <option value="doble">Habitación Doble</option>
+                <option value="suite">Suite</option>
+            </select>
+
+            <label for="llegada">Fecha de Llegada:</label>
+            <input type="date" id="llegada" name="llegada" required>
+
+            <label for="salida">Fecha de Salida:</label>
+            <input type="date" id="salida" name="salida" required>
+
+            <label for="comentarios">Comentarios Adicionales:</label>
+            <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+
+            <button type="submit">Reservar Ahora</button>
+        </form>
+    </div>
+
+    <div class="container" id="consultas">
+        <h2>Consultas por Mail</h2>
+        <p>¿Tiene alguna pregunta? Envíenos un correo electrónico.</p>
+        <button onclick="alert('Consulta enviada. Le responderemos a la brevedad.')">Enviar Consulta por Mail</button>
+    </div>
+
+    <div class="container" id="mapa">
+        <h2>Ubicación del Hotel</h2>
+        <div id="mapid"></div>
+    </div>
+
+    <div class="container" id="admin">
+        <h2>Administración</h2>
+        <button onclick="liberarReserva()">Liberar Reserva</button>
+        <button onclick="abrirHabitacion()">Abrir Habitación</button>
+        <button onclick="cerrarHabitacion()">Cerrar Habitación</button>
+        <button onclick="simularPago()">Simular Pago</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Hotel M&L</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <script>
+        // Mapa
+        var map = L.map('mapid').setView([-34.6037, -58.3816], 13); 
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([-34.6037, -58.3816]).addTo(map)
+            .bindPopup('Hotel Delicias<br>Estamos aquí!')
+            .openPopup();
+
+
+        document.getElementById('reservaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Reserva realizada con éxito. ¡Gracias por elegir Hotel Delicias!');
+
+            this.reset();
+        });
+
+
+        function liberarReserva() {
+            alert('Reserva liberada.');
+        }
+
+        function abrirHabitacion() {
+            alert('Habitación abierta.');
+        }
+
+        function cerrarHabitacion() {
+            alert('Habitación cerrada.');
+        }
+
+        function simularPago() {
+            let monto = prompt("Ingrese el monto a pagar:");
+            if (monto !== null && monto !== "") {
+                alert('Pago de $' + monto + ' simulado con éxito.');
+            } else {
+                alert('Pago cancelado.');
+            }
+        }
+    </script>
+</body>
+
+</html>

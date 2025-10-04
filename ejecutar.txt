@@ -1,0 +1,4 @@
+npm install
+npm install react-router-dom leaflet
+cd C:/Users/marti/OneDrive/Escritorio/hotel-app/hotel-frontend
+npm run dev
