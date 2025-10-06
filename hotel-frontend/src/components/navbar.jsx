@@ -11,6 +11,7 @@ export default function Navbar() {
         <li style={{ display: "inline", margin: "0 1em" }}><Link to="/consultas" style={{ color: "white", textDecoration: "none" }}>Consultas</Link></li>
         <li style={{ display: "inline", margin: "0 1em" }}><Link to="/mapa" style={{ color: "white", textDecoration: "none" }}>Mapa</Link></li>
         <li style={{ display: "inline", margin: "0 1em" }}><Link to="/admin" style={{ color: "white", textDecoration: "none" }}>Administración</Link></li>
+        <li style={{ display: "inline", margin: "0 1em" }}><Link to="/login" style={{ color: "white", textDecoration: "none" }}>Iniciar Sección</Link></li>
       </ul>
     </nav>
   );

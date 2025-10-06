@@ -1,12 +1,20 @@
 import React from "react";
+import { Link, Outlet } from "react-router-dom";
+import Navbar from "../components/navbar";
 
 export default function Admin() {
-const handleClick = (msg) => alert(msg);
+  return (
 
-return (
-    <div style={{ width: "80%", margin: "20px auto", backgroundColor: "white", padding: "20px", borderRadius: "8px", boxShadow: "0 0 10px rgba(0,0,0,0.1)" }}>
-    <h2>Administración</h2>
-    <button onClick={() => handleClick("Reserva liberada.")}>Liberar Reserva</button>
-    <button onClick={() => handleClick("Habitación abierta.")}>Abrir Habitación</button>
+    <div style={{ padding: "1em" }}>
+      <Navbar /> 
+      
+      <h2>Panel de Administración</h2>
+      <div style={{ marginBottom: "1em" }}>
+        <Link to="/admin/habitaciones" style={{ marginRight: "1em" }}>Administrar Habitaciones</Link>
+        <Link to="/admin/consultas">Responder Consultas</Link>
+      </div>
+
+      <Outlet /> {/* Aquí se renderizan las páginas hijas */}
     </div>
-    )}
+  );
+}
