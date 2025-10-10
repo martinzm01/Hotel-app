@@ -4,13 +4,14 @@ import Footer from "./components/footer";
 import Habitaciones from "./pages/habitaciones";
 import Servicios from "./pages/servicios";
 import Reservas from "./pages/reservas";
-import Consultas from "./pages/consultas";
+import Consultas from "./pages/Consultas";
 import Mapa from "./pages/mapa";
 import Admin from "./pages/Admin";
 import Login from "./pages/login";
 import AdminHabitaciones from "./pages/AdminHabitaciones";
 import NotFound from "./pages/NotFount";
 import Home from "./pages/home";
+import Adminhabitaciones from "./pages/AdminHabitaciones";
 
 //el nav y footer se muestran en todas las panrtallas, modificar eso para que solo se muestre en algunas
 function App() {
@@ -27,7 +28,7 @@ function App() {
           <Route path="/mapa" element={<Mapa />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin/habitaciones" element={<AdminHabitaciones />} />
+          <Route path="/AdminHabitaciones" element={<Adminhabitaciones />} />
           <Route path="*" element={<NotFound />} />
 
       </Routes>

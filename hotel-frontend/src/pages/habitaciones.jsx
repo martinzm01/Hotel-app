@@ -1,5 +1,5 @@
 import React from "react";
-import HotelHeader from "../components/HotelHeader";
+import HotelHeader from "../components/Hotelheader";
 import RoomCard from "../components/RoomCard";
 
 export default function Habitaciones() {
@@ -23,7 +23,7 @@ export default function Habitaciones() {
       descripcion:
         "Diseñada para ofrecer confort y elegancia con sala de estar privada.",
       precio: 180,
-      imagen: "/assets/habitacion2.png",
+      imagen: "/assets/imagen4.jpg",
       amenities: ["WiFi", "Jacuzzi", "Room Service", "Vista panorámica"],
       estado: "Ocupada",
     },

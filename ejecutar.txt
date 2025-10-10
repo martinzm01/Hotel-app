@@ -6,7 +6,7 @@ npm run dev
 npm install @supabase/supabase-js
 
 git add .
-git commit -m "Conexión a Supabase agregada"
+git commit -m
 git push
 
 

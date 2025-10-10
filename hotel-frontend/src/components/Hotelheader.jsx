@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // En React Router DOM
-import { Menu, X } from "lucide-react"; // Iconos del menú
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
-// Imágenes del carrusel
 const hotelImages = [
-  "/assets/habitacion1.png",
-  "/assets/habitacion2.png",
+  "/assets/piscina del hotel.png",
   "/assets/carrusel1.png",
-  "/assets/carrusel2.png"
+  "/assets/carrusel2.png",
+  "/assets/carrusel3.png",
 ];
 
-// Enlaces de navegación
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/habitaciones", label: "Habitaciones" },
@@ -23,6 +21,9 @@ export default function HotelHeader() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const navigate = useNavigate();
 
   // Carrusel automático
   useEffect(() => {
@@ -32,12 +33,24 @@ export default function HotelHeader() {
     return () => clearInterval(interval);
   }, []);
 
-  // Detecta scroll para cambiar fondo
+  // Detecta scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Chequea si hay sesión activa
+  useEffect(() => {
+    const logged = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(logged);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
 
   return (
     <header className="relative h-[70vh] min-h-[500px] overflow-hidden">
@@ -87,13 +100,22 @@ export default function HotelHeader() {
                 </Link>
               ))}
 
-              {/* Botón Registrarse */}
-              <Link
-                to="/login"
-                className="border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
-              >
-                Registrarse
-              </Link>
+              {/* Botón Login o Cerrar sesión */}
+              {!isLoggedIn ? (
+                <Link
+                  to="/login"
+                  className="border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
+                >
+                  Login
+                </Link>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
+                >
+                  Cerrar Sesión
+                </button>
+              )}
             </div>
 
             {/* Botón menú móvil */}
@@ -121,13 +143,26 @@ export default function HotelHeader() {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                to="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="mt-4 block w-full border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg text-center hover:bg-white hover:text-black transition"
-              >
-                Registrarse
-              </Link>
+
+              {!isLoggedIn ? (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="mt-4 block w-full border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg text-center hover:bg-white hover:text-black transition"
+                >
+                  Login
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="mt-4 w-full border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg hover:bg-white hover:text-black transition"
+                >
+                  Cerrar Sesión
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -145,7 +180,6 @@ export default function HotelHeader() {
             Descubre el lujo y la comodidad en cada detalle de nuestro hotel
           </p>
 
-          {/* Botones principales */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               to="/reservas"
