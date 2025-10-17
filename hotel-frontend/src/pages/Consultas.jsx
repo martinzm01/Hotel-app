@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Nav from "../components/navbar";
-
+import Footer from "../components/Footer";
 const faqsData = [
   {
     question: "¿Cuáles son los horarios de registro de llegada y salida en Hotel M&L?",
@@ -52,9 +51,7 @@ export default function Consultas() {
         backgroundColor: "rgba(0, 0, 0, 0.5)", //  capa oscura encima
         backgroundBlendMode: "darken",
       }}
-    >
-      <Nav />
-      
+    >      
       <div
         style={{
           maxWidth: "600px",
@@ -143,6 +140,7 @@ export default function Consultas() {
           ))}
         </section>
       </div>
+      <Footer/>
     </div>
   );
 }

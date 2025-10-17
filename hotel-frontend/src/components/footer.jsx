@@ -1,9 +1,71 @@
+
 import React from "react";
-import facebookIcon from "/assets/logofacebook.jpg"; // Importa los íconos
-import instagramIcon from "/assets/logoig.jpg";
-import twitterIcon from "/assets/logox.jpg";
+// Importa los íconos de la librería react-icons
+import { FaFacebook, FaInstagram, FaXTwitter, FaPhone } from "react-icons/fa6";
+// Importa el módulo de estilos CSS
+import styles from "./Footer.module.css";
+
+// Array para gestionar los enlaces a redes sociales de forma escalable
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://facebook.com/hotelML",
+    icon: <FaFacebook />,
+  },
+  {
+    name: "Instagram",
+    href: "https://instagram.com/hotelML",
+    icon: <FaInstagram />,
+  },
+  {
+    name: "Twitter",
+    href: "https://twitter.com/hotelML",
+    icon: <FaXTwitter />,
+  },
+];
 
 export default function Footer() {
+  return (
+    <footer className={styles.footerContainer}>
+      <div className={styles.footerContent}>
+        
+        {/* Sección de Copyright y Contacto */}
+        <div className={styles.infoSection}>
+          <p className={styles.copyright}>
+            &copy; {new Date().getFullYear()} Hotel M&L. Todos los derechos reservados.
+          </p>
+          <p className={styles.certification}>
+            Certificado por la Asociación de Hoteles de Salta.
+          </p>
+          <a href="tel:+5493871234567" className={styles.phoneLink}>
+            <FaPhone size="0.9em" />
+            <span>+54 9 387 123 4567</span>
+          </a>
+        </div>
+
+        {/* Sección de Redes Sociales */}
+        <div className={styles.socialSection}>
+          <span className={styles.socialTitle}>Síguenos</span>
+          <div className={styles.socialIcons}>
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+                className={styles.socialIconLink}
+              >
+                {social.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+/*export default function Footer() {
   return (
     <footer
       style={{

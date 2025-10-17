@@ -1,7 +1,7 @@
 import React from "react";
-import HotelHeader from "../components/Hotelheader";
+import HeaderHabitaciones from "../components/headerHabitaciones";
 import RoomCard from "../components/RoomCard";
-
+import Footer from "../components/Footer";
 export default function Habitaciones() {
   // Datos de ejemplo
   const habitaciones = [
@@ -43,19 +43,12 @@ export default function Habitaciones() {
   return (
     <main>
       {/* Header con carrusel */}
-      <HotelHeader />
+      <HeaderHabitaciones/>
 
       {/* Sección de contenido */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-0 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-center font-serif text-4xl font-light text-gray-800">
-            Nuestras Habitaciones
-          </h2>
-          <p className="mt-6 text-center font-sans text-gray-600 max-w-2xl mx-auto">
-            Explora nuestras opciones de alojamiento, diseñadas para ofrecerte
-            el máximo confort y elegancia durante tu estancia.
-          </p>
-
+          
           {/* Grilla de habitaciones */}
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {habitaciones.map((room) => (
@@ -75,6 +68,7 @@ export default function Habitaciones() {
           </div>
         </div>
       </section>
+      <Footer/>
     </main>
   );
 }

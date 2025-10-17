@@ -1,8 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom"; // reemplazo de next/link
-import Button from "../components/ui/Button"; // default import
+import Button from "../components/ui/Button";
+import { Pencil, Trash2 } from "lucide-react";
 
-export default function RoomCard({
+export default function RoomCardAdmin({
   id,
   name,
   type,
@@ -10,9 +10,10 @@ export default function RoomCard({
   price,
   image,
   amenities = [],
-  estado = "Disponible", 
+  estado = "Disponible",
+  onEdit,
+  onDelete,
 }) {
-
   return (
     <article className="group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -21,14 +22,10 @@ export default function RoomCard({
           alt={name}
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
         />
-
-        {/* Precio */}
         <div className="absolute right-4 top-4 rounded-full bg-background/90 px-4 py-2 backdrop-blur-sm">
           <span className="font-serif text-sm font-medium text-primary">${price}</span>
           <span className="text-xs text-muted-foreground">/ noche</span>
         </div>
-
-        {/* Estado */}
         <div
           className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm ${
             estado === "Disponible"
@@ -60,14 +57,15 @@ export default function RoomCard({
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button asChild className="flex-1" disabled={estado !== "Disponible"}>
-            <Link to={`/reservas?room=${id}`}>
-              {estado === "Disponible" ? "Reservar Ahora" : "No Disponible"}
-            </Link>
+        {/* Botones dentro de la tarjeta */}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1" onClick={() => onEdit(id)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Editar
           </Button>
-          <Button asChild variant="outline">
-            <Link to={`/habitaciones/${id}`}>Ver Detalles</Link>
+          <Button variant="destructive" size="sm" className="flex-1" onClick={() => onDelete(id)}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Eliminar
           </Button>
         </div>
       </div>

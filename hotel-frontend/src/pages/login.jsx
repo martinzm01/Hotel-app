@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../back_supabase/client";
 import { useNavigate } from "react-router-dom";
-import Nav from "../components/navbar";
-
-// Importa la imagen que quieras usar
-import backgroundImage from "/assets/fondologin.jpg"; 
+import Footer from "../components/Footer";
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -12,94 +9,130 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
-
   const navigate = useNavigate();
+
+  // Detecta sesión activa en Supabase
+  useEffect(() => {
+  // Obtener la sesión actual
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/home");
+      }
+    };
+
+    checkSession();
+
+    // Escucha cambios de sesión
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        navigate("/home");
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isRegister) {
-      if (!nombre || !apellido) {
-        alert("Completá nombre y apellido");
+      // VALIDACIONES REGISTRO
+      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        alert("El correo electrónico no tiene un formato válido.");
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      if (!/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8) {
+        alert(
+          "La contraseña debe incluir al menos una mayúscula, un número y tener al menos 8 caracteres."
+        );
+        return;
+      }
+
+      if (!nombre || !apellido) {
+        alert("Completá nombre y apellido.");
+        return;
+      }
+
+      // Registro en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: { nombre, apellido },
-        },
+        options: { data: { nombre, apellido } },
       });
 
-      if (error) {
-        alert("Error al registrarse: " + error.message);
+      if (authError) {
+        alert("Error al registrarse: " + authError.message);
         return;
       }
 
-      const { error: insertError } = await supabase
-        .from("usuarios")
-        .insert([
-          {
-            id: data.user.id,
-            nombre,
-            apellido,
-            email,
-            rol: "cliente",
-          },
-        ]);
-
-      if (insertError) {
-        alert("Error al crear usuario en tabla usuarios: " + insertError.message);
+      if (!authData.user) {
+        alert("Error: no se pudo crear el usuario.");
         return;
       }
 
-      alert(
-        "Usuario registrado! Revisa tu correo para confirmar tu cuenta si está activada la verificación de email."
-      );
+      // Insertar en tabla usuarios
+      const { error: rpcError } = await supabase.rpc("insert_usuario", {
+        p_id: authData.user.id,
+        p_nombre: nombre,
+        p_apellido: apellido,
+        p_email: email,
+        p_rol: "cliente",
+      });
 
+      if (rpcError) {
+        alert("Error al crear usuario en tabla usuarios: " + rpcError.message);
+        return;
+      }
+
+      alert("✅ Usuario registrado correctamente. Revisá tu correo si hay verificación de email.");
       setIsRegister(false);
       setEmail("");
       setPassword("");
       setNombre("");
       setApellido("");
-
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // LOGIN
+      if (!email || !password) {
+        alert("Por favor, completá todos los campos.");
+        return;
+      }
+
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        alert("Error al iniciar sesión: " + error.message);
+      if (loginError || !loginData.user) {
+        alert("Correo o contraseña incorrectos.");
         return;
       }
-      alert("Login exitoso!");
-      console.log("Usuario logueado:", data.user);
-    
-      localStorage.setItem("isLoggedIn", "true");
-      navigate("/habitaciones");
+
+      alert("Bienvenido/a!");
+      navigate("/home");
     }
   };
 
   return (
-    <div className="relative bg-gray-100 h-screen flex justify-center items-center">
-      <Nav/>
-      {/* Imagen de fondo */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="absolute inset-0 bg-black opacity-40"></div> {/* Overlay opcional */}
-      </div>
-
-      {/* Contenedor del formulario */}
-      <div className="relative z-10 bg-white p-8 rounded-xl shadow-lg w-96">
+    <div
+      style={{
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundBlendMode: "darken",
+        backgroundImage: "url('/assets/fondologin.jpg')",
+      }}
+      className="relative bg-gray-100 min-h-screen flex flex-col justify-between pt-20 bg-cover bg-center"
+    >
+      <div className="relative z-10 bg-white p-8 rounded-xl shadow-lg w-96 mx-auto mt-10 mb-5">
         <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center font-serif">
           {isRegister ? "Registrarse" : "Iniciar sesión"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-5">
           {isRegister && (
             <>
               <input
@@ -129,6 +162,7 @@ export default function Login() {
             required
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
+
           <input
             type="password"
             placeholder="Contraseña"
@@ -149,208 +183,15 @@ export default function Login() {
         <p className="mt-4 text-center">
           {isRegister ? "¿Ya tenés una cuenta?" : "¿No tenés cuenta?"}{" "}
           <button
-            className="text-black-500 hover:text-blue-700 font-bold underline cursor-pointer"
+            className="text-blue-600 hover:text-blue-800 font-bold underline cursor-pointer"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister ? "Iniciar sesión" : "Registrarme"}
           </button>
         </p>
       </div>
-    </div>
-  );
-}
 
-
-
-/*import React, { useState } from "react";
-import { supabase } from "../back_supabase/client"; // Ruta correcta
-import { useNavigate } from "react-router-dom";
-
-export default function Login() {
-  const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (isRegister) {
-      if (!nombre || !apellido) {
-        alert("Completá nombre y apellido");
-        return;
-      }
-
-      // 🔹 Registro en Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { nombre, apellido },
-        },
-      });
-
-      if (error) {
-        alert("Error al registrarse: " + error.message);
-        return;
-      }
-
-      // 🔹 Insertar en tabla usuarios
-      const { error: insertError } = await supabase
-        .from("usuarios")
-        .insert([
-          {
-            id: data.user.id,
-            nombre,
-            apellido,
-            email,
-            rol: "cliente", // rol por defecto
-          },
-        ]);
-
-      if (insertError) {
-        alert("Error al crear usuario en tabla usuarios: " + insertError.message);
-        return;
-      }
-
-      alert(
-        "Usuario registrado! Revisa tu correo para confirmar tu cuenta si está activada la verificación de email."
-      );
-
-      // Limpiar formulario y volver a login
-      setIsRegister(false);
-      setEmail("");
-      setPassword("");
-      setNombre("");
-      setApellido("");
-
-    } else {
-      // 🔹 Login
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        alert("Error al iniciar sesión: " + error.message);
-        return;
-      }
-
-      alert("Login exitoso!");
-      console.log("Usuario logueado:", data.user);
-
-      // Redirigir a la página principal
-      navigate("/habitaciones");
-    }
-  };
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>{isRegister ? "Registrarse" : "Iniciar sesión"}</h2>
-
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {isRegister && (
-            <>
-              <input
-                style={styles.input}
-                type="text"
-                placeholder="Nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                required
-              />
-              <input
-                style={styles.input}
-                type="text"
-                placeholder="Apellido"
-                value={apellido}
-                onChange={(e) => setApellido(e.target.value)}
-                required
-              />
-            </>
-          )}
-
-          <input
-            style={styles.input}
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            style={styles.input}
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <button type="submit" style={styles.button}>
-            {isRegister ? "Registrarse" : "Ingresar"}
-          </button>
-        </form>
-
-        <p style={{ marginTop: "1em" }}>
-          {isRegister ? "¿Ya tenés una cuenta?" : "¿No tenés cuenta?"}{" "}
-          <span style={styles.toggle} onClick={() => setIsRegister(!isRegister)}>
-            {isRegister ? "Iniciar sesión" : "Registrarme"}
-          </span>
-        </p>
-      </div>
+      <Footer />
     </div>
   );
 }
-
-const styles = {
-  container: {
-    backgroundColor: "#f7f7f7",
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: "2em",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    width: "320px",
-    textAlign: "center",
-  },
-  title: {
-    marginBottom: "1em",
-    color: "#333",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  input: {
-    padding: "0.7em",
-    marginBottom: "0.8em",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    fontSize: "1em",
-  },
-  button: {
-    backgroundColor: "#444",
-    color: "white",
-    padding: "0.8em",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "1em",
-  },
-  toggle: {
-    color: "#007bff",
-    cursor: "pointer",
-    textDecoration: "underline",
-  },
-};
-*/

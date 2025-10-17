@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { supabase } from "../back_supabase/client";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -24,16 +25,25 @@ export default function HotelNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Chequea si hay sesión activa
+  // Sincroniza sesión Supabase
   useEffect(() => {
-    const logged = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(logged);
+    // Obtiene sesión actual
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsLoggedIn(!!data.session);
+    };
+    getSession();
+
+    // Escucha cambios de sesión en tiempo real
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Cierra sesión
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate("/login");
   };
 
@@ -64,7 +74,6 @@ export default function HotelNavbar() {
               </Link>
             ))}
 
-            {/* Botón Login o Cerrar sesión */}
             {!isLoggedIn ? (
               <Link
                 to="/login"

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Nav from "../components/navbar";
-
+import Footer from "../components/Footer";
 const roomPrices = {
   Doble: 120,
   Suite: 180,
@@ -45,7 +44,6 @@ export default function ReservaForm() {
           color: "#222",
         }}
         >
-        <Nav />
           <h2 style={{ textAlign: "center", marginBottom: "1.5em" }}>Realizar Reserva</h2>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
             <div>
@@ -182,6 +180,7 @@ export default function ReservaForm() {
             </button>
           </div>
         </div>
+        <Footer/>
       </div>
   );
 }

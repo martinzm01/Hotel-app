@@ -1,7 +1,30 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { supabase } from "../back_supabase/client";
+
+const pageContent = {
+  "/habitaciones": {
+    title: "Nuestras Habitaciones",
+    subtitle: "Explora nuestras opciones de alojamiento, diseñadas para ofrecerte el máximo confort y elegancia durante tu estancia",
+  },
+  "/reservas": {
+    title: "Reservas",
+    subtitle: "Gestiona tus reservas de manera rápida y sencilla.",
+  },
+  "/consultas": {
+    title: "Consultas",
+    subtitle: "¿Tienes dudas? Estamos aquí para ayudarte.",
+  },
+  "/admin": {
+    title: "Panel de Administración",
+    subtitle: "Gestiona habitaciones, usuarios y reservas desde un solo lugar.",
+  },
+  "/login": {
+    title: "Iniciar Sesión",
+    subtitle: "Accede al panel de administración del hotel.",
+  },
+};
 
 const hotelImages = [
   "/assets/piscina del hotel.png",
@@ -25,6 +48,7 @@ export default function HotelHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Carrusel automático
   useEffect(() => {
@@ -41,27 +65,22 @@ export default function HotelHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sincroniza sesión Supabase y cambios en otras pestañas
+  // Manejo de sesión con Supabase y sincronización entre pestañas
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       setIsLoggedIn(!!data.session);
-      // Guardamos en localStorage para detectar cambios en otras pestañas
       localStorage.setItem("isLoggedIn", !!data.session);
     };
     checkSession();
 
-    // Escucha cambios de sesión en esta pestaña
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
       localStorage.setItem("isLoggedIn", !!session);
     });
 
-    // Escucha cambios de localStorage (cerrar sesión en otra pestaña)
     const handleStorageChange = (e) => {
-      if (e.key === "isLoggedIn") {
-        setIsLoggedIn(e.newValue === "true");
-      }
+      if (e.key === "isLoggedIn") setIsLoggedIn(e.newValue === "true");
     };
     window.addEventListener("storage", handleStorageChange);
 
@@ -74,12 +93,12 @@ export default function HotelHeader() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsLoggedIn(false);
-    localStorage.setItem("isLoggedIn", "false"); // sincroniza otras pestañas
+    localStorage.setItem("isLoggedIn", "false");
     navigate("/login");
   };
 
   return (
-    <header className="relative h-[70vh] min-h-[500px] overflow-hidden">
+    <header className="relative h-[40vh] max-h-[400px] min-h-[200px] overflow-hidden">
       {/* Carrusel */}
       <div className="absolute inset-0">
         {hotelImages.map((image, index) => (
@@ -107,14 +126,12 @@ export default function HotelHeader() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
-            {/* Logo */}
             <Link to="/" className="flex items-center">
               <span className="font-serif text-2xl font-light tracking-wider text-white">
                 Hotel M&L
               </span>
             </Link>
 
-            {/* Navegación desktop */}
             <div className="hidden items-center gap-8 md:flex">
               {navLinks.map((link) => (
                 <Link
@@ -143,7 +160,6 @@ export default function HotelHeader() {
               )}
             </div>
 
-            {/* Botón menú móvil */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-white md:hidden"
@@ -193,49 +209,16 @@ export default function HotelHeader() {
         )}
       </nav>
 
-      {/* Contenido central */}
-      <div className="relative z-10 flex h-full items-center justify-center px-4">
-        <div className="text-center">
+      {/* Contenido central dinámico */}
+      <div className="relative z-10 flex min-h-full mt-20 justify-center px-4 text-center">
+        <div>
           <h1 className="font-serif text-5xl font-light leading-tight tracking-wide text-white sm:text-6xl lg:text-7xl">
-            Bienvenido a la
-            <br />
-            <span className="font-normal">Experiencia Perfecta</span>
+            {pageContent[location.pathname]?.title || "Hotel M&L"}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl font-sans text-lg font-light leading-relaxed text-white/90 sm:text-xl">
-            Descubre el lujo y la comodidad en cada detalle de nuestro hotel
+            {pageContent[location.pathname]?.subtitle || "Tu experiencia ideal de hospedaje."}
           </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              to="/reservas"
-              className="bg-white text-black font-sans font-normal px-6 py-3 rounded-lg hover:bg-white/90 transition"
-            >
-              Reservar Ahora
-            </Link>
-            <Link
-              to="/habitaciones"
-              className="border border-white/30 bg-transparent text-white font-sans font-light px-6 py-3 rounded-lg hover:bg-white hover:text-black transition"
-            >
-              Ver Habitaciones
-            </Link>
-          </div>
         </div>
-      </div>
-
-      {/* Indicadores del carrusel */}
-      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-        {hotelImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentImageIndex(index)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              index === currentImageIndex
-                ? "w-8 bg-white"
-                : "w-1.5 bg-white/50 hover:bg-white/75"
-            }`}
-            aria-label={`Ir a la imagen ${index + 1}`}
-          />
-        ))}
       </div>
     </header>
   );

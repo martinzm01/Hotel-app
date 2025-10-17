@@ -1,7 +1,8 @@
+/////HEADER PARA ADMINISTRADORES
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { supabase } from "../back_supabase/client";
 
 const hotelImages = [
   "/assets/piscina del hotel.png",
@@ -41,40 +42,15 @@ export default function HotelHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sincroniza sesión Supabase y cambios en otras pestañas
+  // Chequea si hay sesión activa
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsLoggedIn(!!data.session);
-      // Guardamos en localStorage para detectar cambios en otras pestañas
-      localStorage.setItem("isLoggedIn", !!data.session);
-    };
-    checkSession();
-
-    // Escucha cambios de sesión en esta pestaña
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-      localStorage.setItem("isLoggedIn", !!session);
-    });
-
-    // Escucha cambios de localStorage (cerrar sesión en otra pestaña)
-    const handleStorageChange = (e) => {
-      if (e.key === "isLoggedIn") {
-        setIsLoggedIn(e.newValue === "true");
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      listener.subscription.unsubscribe();
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    const logged = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(logged);
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
-    localStorage.setItem("isLoggedIn", "false"); // sincroniza otras pestañas
     navigate("/login");
   };
 
@@ -126,6 +102,7 @@ export default function HotelHeader() {
                 </Link>
               ))}
 
+              {/* Botón Login o Cerrar sesión */}
               {!isLoggedIn ? (
                 <Link
                   to="/login"
