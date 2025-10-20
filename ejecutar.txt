@@ -11,4 +11,4 @@ git push
 
 npm install react-icons --- libreria que importa los svg de los logos del footer
 
- npm install @radix-ui/react-slot ---instala la libreria para usar aschuld en el componenete button
+npm install @radix-ui/react-slot ---instala la libreria para usar aschuld en el componenete button

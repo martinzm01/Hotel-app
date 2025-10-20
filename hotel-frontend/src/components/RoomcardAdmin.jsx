@@ -14,8 +14,9 @@ export default function RoomCardAdmin({
   onEdit,
   onDelete,
 }) {
+  //group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg
   return (
-    <article className="group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg">
+    <article className="group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg bg-gray-50 text-black">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image || "/placeholder.svg"}

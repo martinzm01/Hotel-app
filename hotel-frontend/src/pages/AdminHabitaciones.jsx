@@ -135,7 +135,7 @@ export default function AdministracionPage() {
       {/* Modal flotante centralizado */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-lg w-full p-6 relative">
+          <div className="bg-white rounded-lg max-w-lg w-full p-6 relative text-black">
             <h3 className="text-xl font-serif font-light mb-4">
               {editingRoom ? "Editar Habitación" : "Nueva Habitación"}
             </h3>
