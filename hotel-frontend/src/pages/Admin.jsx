@@ -31,7 +31,7 @@ export default function Admin() {
             {/* Tarjeta 1 - Corregida para usar NavLink */}
             <NavLink
               to="/admin/habitaciones" // Ruta anidada correcta
-              className="max-w-[500px] cursor-pointer mb-20 flex flex-col justify-between p-6 bg-white/95 border border-gray-200 rounded-xl shadow-xl h-[400px] transition-transform duration-300 hover:scale-105 hover:shadow-2xl no-underline"
+              className="max-w-[500px] cursor-pointer mb-20 flex flex-col justify-between p-6 bg-white/95 border border-gray-200 rounded-xl shadow-xl h-[400px] transition-transform duration-300 hover:scale-104 hover:shadow-2xl no-underline"
             >
               <div>
                 <h2 className="text-center text-4xl font-serif mb-4">
@@ -51,7 +51,7 @@ export default function Admin() {
             {/* Tarjeta 2 - Corregida para usar NavLink */}
             <NavLink
               to="/admin/consultas" // Ruta anidada correcta
-              className="cursor-pointer max-w-[500px] mb-20 flex flex-col justify-between p-6 bg-white/95 border border-gray-200 rounded-xl shadow-xl h-[400px] transition-transform duration-300 hover:scale-105 hover:shadow-2xl no-underline"
+              className="cursor-pointer max-w-[500px] mb-20 flex flex-col justify-between p-6 bg-white/95 border border-gray-200 rounded-xl shadow-xl h-[400px] transition-transform duration-300 hover:scale-104 hover:shadow-2xl no-underline"
             >
               <div>
                 <h2 className="text-center text-4xl mb-4 font-serif">
