@@ -26,7 +26,7 @@ export default function ReservaForm() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        minHeight: "100vh", // 🔹 hace que el fondo llegue hasta abajo
+        minHeight: "100vh", // hace que el fondo llegue hasta abajo
         display: "flex",
         flexDirection: "column",
         backgroundColor: "rgba(0, 0, 0, 0.6)", //  capa oscura encima

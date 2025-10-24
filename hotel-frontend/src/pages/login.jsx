@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../back_supabase/client";
+import React, { useState } from "react"; // Quitamos useEffect
+import { supabase } from "../back_supabase/Client";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
@@ -11,30 +11,7 @@ export default function Login() {
   const [apellido, setApellido] = useState("");
   const navigate = useNavigate();
 
-  // Detecta sesión activa en Supabase
-  useEffect(() => {
-  // Obtener la sesión actual
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/home");
-      }
-    };
-
-    checkSession();
-
-    // Escucha cambios de sesión
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        navigate("/home");
-      }
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [navigate]);
-
+  // App.jsx y AuthContext ya se encargan de esta lógica.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,7 +66,7 @@ export default function Login() {
         return;
       }
 
-      alert("✅ Usuario registrado correctamente. Revisá tu correo si hay verificación de email.");
+      alert(" Usuario registrado correctamente. Revisá tu correo si hay verificación de email.");
       setIsRegister(false);
       setEmail("");
       setPassword("");
@@ -113,7 +90,8 @@ export default function Login() {
       }
 
       alert("Bienvenido/a!");
-      navigate("/home");
+      // Esta navegación SÍ está bien, porque es una acción directa del usuario.
+      navigate("/home"); 
     }
   };
 

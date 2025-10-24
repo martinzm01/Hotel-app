@@ -14,15 +14,17 @@ export default function RoomCardAdmin({
   onEdit,
   onDelete,
 }) {
+  //overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black
+  //group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg
   return (
-    <article className="group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg">
+    <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image || "/placeholder.svg"}
           alt={name}
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute right-4 top-4 rounded-full bg-background/90 px-4 py-2 backdrop-blur-sm">
+        <div className="absolute right-4 top-4 rounded-full bg-background/90 px-4 py-2 backdrop-blur-sm bg-white/50">
           <span className="font-serif text-sm font-medium text-primary">${price}</span>
           <span className="text-xs text-muted-foreground">/ noche</span>
         </div>
@@ -50,7 +52,7 @@ export default function RoomCardAdmin({
         {amenities.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
             {amenities.slice(0, 4).map((amenity, index) => (
-              <span key={index} className="text-xs text-muted-foreground">
+              <span key={index} className="bg-gray-200 rounded-full px-3 py-1 text-sm flex items-center gap-1">
                 • {amenity}
               </span>
             ))}
