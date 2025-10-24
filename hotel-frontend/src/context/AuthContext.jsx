@@ -1,8 +1,7 @@
 //este codigo es recomendado por supabase para la autenticacion del usuario, verifica el estado de la sesion y mantiene la sesion abierta. Ademas resuelve varios bugs de los navegadores.
-
 //codigo adaptado a nuestro hotel//
 import { createContext, useState, useEffect, useContext } from 'react';
-import { supabase } from '../back_supabase/Client'; // Revisa que esta ruta sea correcta
+import { supabase } from '../back_supabase/client'; // Revisa que esta ruta sea correcta
 
 const AuthContext = createContext();
 

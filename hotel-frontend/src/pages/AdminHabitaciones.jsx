@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../back_supabase/Client"; // Asegúrate que la ruta sea correcta
+import { supabase } from "../back_supabase/Client"; 
 import Header from "../components/headerHabitaciones";
 import RoomCardAdmin from "../components/RoomcardAdmin";
 import Button from "../components/ui/Button";
@@ -107,7 +107,7 @@ export default function AdministracionPage() {
         // --- SECCIÓN 3: TRADUCCIÓN (Respuesta BDD -> React) ---
         const updatedRoom = {
           id: data.id, estado: data.estado,
-          name: data.numero, // CAMBIO CORREGIDO
+          name: data.numero, 
           type: data.tipo, description: data.descripcion, price: data.precio,
           amenities: data.servicios || [], image: data.imagen_url || ""
         };
@@ -127,7 +127,7 @@ export default function AdministracionPage() {
         // --- SECCIÓN 4: TRADUCCIÓN (Respuesta BDD -> React) ---
         const newRoom = {
           id: data.id, estado: data.estado,
-          name: data.numero, // CAMBIO CORREGIDO
+          name: data.numero, 
           type: data.tipo, description: data.descripcion, price: data.precio,
           amenities: data.servicios || [], image: data.imagen_url || ""
         };

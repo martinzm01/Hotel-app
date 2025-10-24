@@ -14,6 +14,9 @@ import AdminHabitaciones from "./pages/AdminHabitaciones";
 import AdminConsultas from "./pages/AdminConsultas";
 import Login from "./pages/login";
 import NotFound from "./pages/NotFound";
+import Mapa from "./pages/mapa";
+import AdminOperadores from "./pages/AdminOperadores"
+import HistorialReservas from "./pages/historialReservas"
 
 function AppRoutes() {
   const { session } = useAuth();
@@ -22,13 +25,13 @@ function AppRoutes() {
     <Routes>
       {/* --- Rutas Públicas (Visibles para todos) --- */}
       <Route path="/home" element={<Home />} />
-      <Route path="/habitaciones" element={<Habitaciones />} />
       <Route path="/login" element={!session ? <Login /> : <Navigate to="/home" />} />
 
       {/* --- Rutas Protegidas para Clientes --- */}
       {/* Solo usuarios con rol 'cliente' pueden acceder */}
       <Route element={<ProtectedRoute allowedRoles={['cliente']} />}>
-        <Route path="/reservas" element={<Reservas />} />
+        <Route path="/habitaciones" element={<Habitaciones />} />
+        <Route path="/historialReservas" element={<HistorialReservas />} />
         <Route path="/consultas" element={<Consultas />} />
       </Route>
 
@@ -39,10 +42,18 @@ function AppRoutes() {
           {/* Rutas anidadas que se muestran dentro de Administracion.jsx */}
           <Route index element={<Navigate to="habitaciones" replace />} />
           <Route path="habitaciones" element={<AdminHabitaciones />} />
-          <Route path="consultas" element={<AdminConsultas />} />
+          <Route path="operadores" element={<AdminOperadores />} />
         </Route>
       </Route>
       
+      {/* --- Rutas Protegidas para Operadores --- */}
+      {/* Solo usuarios con rol 'operador' pueden acceder */}
+      <Route element={<ProtectedRoute allowedRoles={['operador']} />}>
+        <Route path="Reservas" element={<Reservas />} />
+        <Route path="AdminConsultas" element={<AdminConsultas />} />
+        <Route path="mapa" element={<Mapa />} />
+      </Route>
+
       {/* --- Redirección principal y página no encontrada --- */}
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-
+import HotelHeader from "../components/headerHabitaciones";
 export default function AdminConsultas() {
 
     // Función que podrías usar luego para manejar consultas
@@ -14,18 +14,16 @@ export default function AdminConsultas() {
     }, []);
 
     return (
-            <div className="min-h-screen flex flex-col items-center justify-start bg-gray-100 p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">
-                Panel de Consultas - Administrador
+            <main >
+            <HotelHeader/>
+            <div class= "grid grid-cols-1 md:grid-cols-2 gap-8 text-black w-full max-w-[1200px] px-4">
+            <h1 className="text-3xl font-bold text-gray-800 mb-6 w-full">
+                Panel de Consultas
             </h1>
             <p className="text-gray-600">
                 Aquí podrás ver y gestionar todas las consultas de los clientes.
             </p>
-
-            {/* Ejemplo: lugar donde luego agregarás la lista de consultas */}
-            <div className="mt-8 w-full max-w-4xl bg-white p-6 rounded shadow">
-                <p className="text-gray-500">Próximamente: tabla de consultas...</p>
             </div>
-            </div>
+            </main>
         );
     }

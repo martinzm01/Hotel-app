@@ -50,16 +50,15 @@ export default function Admin() {
 
             {/* Tarjeta 2 - Corregida para usar NavLink */}
             <NavLink
-              to="/admin/consultas" // Ruta anidada correcta
+              to="/admin/operadores" // Ruta anidada correcta
               className="cursor-pointer max-w-[500px] mb-20 flex flex-col justify-between p-6 bg-white/95 border border-gray-200 rounded-xl shadow-xl h-[400px] transition-transform duration-300 hover:scale-104 hover:shadow-2xl no-underline"
             >
               <div>
                 <h2 className="text-center text-4xl mb-4 font-serif">
-                  Administrar Consultas
+                  Administrar Operadores
                 </h2>
-                <p>Gestione los servicios del hotel.</p>
-                <p>Agregue, modifique o elimine servicios.</p>
-                <p>Administre categorías, tarifas y disponibilidad.</p>
+                <p>Gestione los operadores.</p>
+                <p>Agregue, modifique o elimine operadores.</p>
               </div>
               <div className="mt-6 text-center">
                 <span className="inline-block min-w-[350px] bg-black text-white rounded-md py-2 px-6 hover:bg-gray-900 transition-colors">

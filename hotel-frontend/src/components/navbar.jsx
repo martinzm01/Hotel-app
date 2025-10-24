@@ -25,23 +25,47 @@ export default function HotelNavbar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  // 2. Lógica de enlaces simplificada para mayor claridad
+  // 2. Lógica de enlaces actualizada según los nuevos roles
   const getNavLinks = () => {
+    // "Home" es común para todos los usuarios, logueados o no.
     const links = [
-      { href: "/home", label: "Home", roles: ["cliente", "administrador", "publico"] }
+      { href: "/home", label: "Home" }
     ];
 
-    if (!session) { // No logueado
-      links.push({ href: "/habitaciones", label: "Habitaciones", roles: ["publico"] });
-    } else if (profile?.rol === 'cliente') { // Cliente
+    if (!session) { 
+      // --- Usuario Público (No logueado) ---
       links.push(
-        { href: "/habitaciones", label: "Habitaciones", roles: ["cliente"] },
-        { href: "/reservas", label: "Reservas", roles: ["cliente"] },
-        { href: "/consultas", label: "Consultas", roles: ["cliente"] }
+        { href: "/habitaciones", label: "Habitaciones" }
+        // El botón "Login" se maneja por separado
       );
-    } else if (profile?.rol === 'administrador') { // Admin
-      links.push({ href: "/admin", label: "Administración", roles: ["administrador"] });
+
+    } else if (profile?.rol === 'cliente') { 
+      // --- Rol: Cliente ---
+      links.push(
+        { href: "/habitaciones", label: "Habitaciones" },
+        { href: "/consultas", label: "Consultas" },
+        // Reemplazo de 'reservas' por 'historialReservas'
+        { href: "/historialReservas", label: "Reservas" } 
+      );
+
+    } else if (profile?.rol === 'administrador') { 
+      // --- Rol: Administrador ---
+      links.push(
+        { href: "/admin", label: "Administración" }
+      );
+
+    } else if (profile?.rol === 'operador') {
+      // --- Rol: Operador ---
+      links.push(
+        { href: "/adminconsultas", label: "Consultas" },
+        { href: "/mapa", label: "Mapa" },
+        { href: "/reservas", label: "Reservas" } // El enlace que antes era de clientes
+      );
     }
+    
+    // Si un usuario está logueado pero no tiene un rol asignado (ej: profile.rol es null),
+    // solo verá "Home".
+
     return links;
   };
 
@@ -63,6 +87,7 @@ export default function HotelNavbar() {
               </Link>
             ))}
             {!session ? (
+              // El enlace a Login para todos (cuando no están logueados)
               <Link to="/login" className={authButtonClasses}>Login</Link>
             ) : (
               <button onClick={handleLogout} className={authButtonClasses}>Cerrar Sesión</button>
@@ -88,6 +113,7 @@ export default function HotelNavbar() {
             ))}
             <div className="pt-4">
               {!session ? (
+                // El enlace a Login para todos (cuando no están logueados)
                 <Link to="/login" className={`${authButtonClasses} block w-full text-center`} onClick={closeMenu}>Login</Link>
               ) : (
                 <button onClick={() => { handleLogout(); closeMenu(); }} className={`${authButtonClasses} block w-full`}>Cerrar Sesión</button>

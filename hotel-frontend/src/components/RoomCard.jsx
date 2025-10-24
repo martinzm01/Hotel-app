@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom"; // reemplazo de next/link
-import Button from "../components/ui/Button"; // default import
+import { Link } from "react-router-dom"; 
+import Button from "../components/ui/Button"; 
 
 export default function RoomCard({
   id,
