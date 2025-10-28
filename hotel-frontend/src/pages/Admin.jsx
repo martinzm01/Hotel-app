@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 
 export default function Admin() {
   const location = useLocation();
