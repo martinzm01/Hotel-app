@@ -1,5 +1,5 @@
 import React, { useState } from "react"; // Quitamos useEffect
-import { supabase } from "../back_supabase/Client";
+import { supabase } from "../back_supabase/client";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/footer";
 
