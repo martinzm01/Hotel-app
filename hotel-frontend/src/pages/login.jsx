@@ -1,7 +1,7 @@
 import React, { useState } from "react"; // Quitamos useEffect
-import { supabase } from "../back_supabase/Client";
+import { supabase } from "../back_supabase/client";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);

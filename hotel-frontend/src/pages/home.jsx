@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HotelHeader from "../components/Hotelheader";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 const carouselItems = [
   {
     title: "Restaurant Terracota",

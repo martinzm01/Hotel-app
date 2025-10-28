@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 const faqsData = [
   {
     question: "¿Cuáles son los horarios de registro de llegada y salida en Hotel M&L?",

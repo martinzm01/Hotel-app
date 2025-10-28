@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 // 1. IMPORTA TU CLIENTE DE SUPABASE (asegúrate que la ruta sea correcta)
-import { supabase } from "../back_supabase/Client"; 
+import { supabase } from "../back_supabase/client"; 
 
 import HeaderHabitaciones from "../components/headerHabitaciones";
 import RoomCard from "../components/RoomCard";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 
 export default function Habitaciones() {
   // 2. DATOS AHORA SON ESTADOS: uno para la lista, uno para carga, uno para error
