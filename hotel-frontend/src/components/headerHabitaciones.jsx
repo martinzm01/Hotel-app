@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { supabase } from "../back_supabase/Client";
+import { useLocation } from "react-router-dom";
+import { supabase } from "../back_supabase/client";
 
 const pageContent = {
   "/habitaciones": {
@@ -10,8 +9,14 @@ const pageContent = {
   },
   "/reservas": {
     title: "Reservas",
-    subtitle: "Gestiona tus reservas de manera rápida y sencilla.",
+    subtitle: "Gestiona las reservas de manera rápida y sencilla.",
   },
+
+  "/adminconsultas": {
+    title: "Consultas",
+    subtitle: "Administra consultas de nuestros clientes.",
+  },
+
   "/consultas": {
     title: "Consultas",
     subtitle: "¿Tienes dudas? Estamos aquí para ayudarte.",
@@ -24,6 +29,10 @@ const pageContent = {
     title: "Iniciar Sesión",
     subtitle: "Accede al panel de administración del hotel.",
   },
+    "/mapa": {
+    title: "Mapa de Ocupación",
+    subtitle: "Visualiza y gestiona el estado de todas las habitaciones en tiempo real",
+  },
 };
 
 const hotelImages = [
@@ -33,21 +42,8 @@ const hotelImages = [
   "/assets/carrusel3.png",
 ];
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/habitaciones", label: "Habitaciones" },
-  { href: "/reservas", label: "Reservas" },
-  { href: "/consultas", label: "Consultas" },
-  { href: "/admin", label: "Administración" },
-];
-
 export default function HotelHeader() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const navigate = useNavigate();
   const location = useLocation();
 
   // Carrusel automático
@@ -58,43 +54,15 @@ export default function HotelHeader() {
     return () => clearInterval(interval);
   }, []);
 
-  // Detecta scroll
+  // Cambiar título de la pestaña según ruta
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const content = pageContent[location.pathname];
+    document.title = content?.title || "Hotel M&L";
+  }, [location.pathname]);
 
-  // Manejo de sesión con Supabase y sincronización entre pestañas
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsLoggedIn(!!data.session);
-      localStorage.setItem("isLoggedIn", !!data.session);
-    };
-    checkSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-      localStorage.setItem("isLoggedIn", !!session);
-    });
-
-    const handleStorageChange = (e) => {
-      if (e.key === "isLoggedIn") setIsLoggedIn(e.newValue === "true");
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      listener.subscription.unsubscribe();
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setIsLoggedIn(false);
-    localStorage.setItem("isLoggedIn", "false");
-    navigate("/login");
+  const content = pageContent[location.pathname] || {
+    title: "Hotel M&L",
+    subtitle: "Tu experiencia ideal de hospedaje.",
   };
 
   return (
@@ -118,16 +86,14 @@ export default function HotelHeader() {
         ))}
       </div>
 
-
-
       {/* Contenido central dinámico */}
       <div className="relative z-10 flex min-h-full mt-20 justify-center px-4 text-center">
         <div>
           <h1 className="font-serif text-5xl font-light leading-tight tracking-wide text-white sm:text-6xl lg:text-7xl">
-            {pageContent[location.pathname]?.title || "Hotel M&L"}
+            {content.title}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl font-sans text-lg font-light leading-relaxed text-white/90 sm:text-xl">
-            {pageContent[location.pathname]?.subtitle || "Tu experiencia ideal de hospedaje."}
+            {content.subtitle}
           </p>
         </div>
       </div>

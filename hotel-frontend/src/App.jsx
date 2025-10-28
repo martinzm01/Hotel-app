@@ -15,8 +15,8 @@ import AdminConsultas from "./pages/AdminConsultas";
 import Login from "./pages/login";
 import NotFound from "./pages/NotFound";
 import Mapa from "./pages/mapa";
-import AdminOperadores from "./pages/AdminOperadores"
-import HistorialReservas from "./pages/historialReservas"
+import AdminOperadores from "./pages/AdminOperadores";
+import HistorialReservas from "./pages/historialReservas";
 
 function AppRoutes() {
   const { session } = useAuth();

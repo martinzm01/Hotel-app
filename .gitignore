@@ -2,3 +2,5 @@ node_modules/
 Backend/node_modules/
 hotel-frontend/node_modules/
 .env
+# Supabase local env variables (claves secrets!)  ///esto sirve para no subir las claves a git
+supabase/.env
