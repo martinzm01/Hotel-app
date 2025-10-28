@@ -29,6 +29,10 @@ const pageContent = {
     title: "Iniciar Sesión",
     subtitle: "Accede al panel de administración del hotel.",
   },
+    "/mapa": {
+    title: "Mapa de Ocupación",
+    subtitle: "Visualiza y gestiona el estado de todas las habitaciones en tiempo real",
+  },
 };
 
 const hotelImages = [

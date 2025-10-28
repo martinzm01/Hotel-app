@@ -5,6 +5,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "../back_supabase/client"; // Ajusta la ruta a tu cliente Supabase
 import ModalPlaceholder from "../components/ModalPlaceholder"; // Ajusta la ruta a tu componente Modal
 import ModalDetalleReserva from "../components/ModalDetalleReserva"
+import Hotelheader from "../components/headerHabitaciones"
 // Importamos las funciones de date-fns
 import {
   format,
@@ -205,7 +206,7 @@ export default function MapaOcupacion() {
   return (
     // Contenedor principal con fondo
     <div
-      className="min-h-screen pt-20" // Padding top para dejar espacio al navbar fijo
+      className="min-h-screen " // Padding top para dejar espacio al navbar fijo
       style={{
         backgroundImage: "url('/assets/piscina del hotel.png')", // Verifica esta ruta
         backgroundColor: "rgba(0,0,0,0.8)",
@@ -215,18 +216,9 @@ export default function MapaOcupacion() {
       }}
     >
       {/* Contenido principal con fondo semi-transparente o sólido */}
+        <Hotelheader/>
       <main className="min-h-[calc(100vh-80px)] bg-gray-50/95 p-6 backdrop-blur-sm"> {/* Ajustado min-h y añadido backdrop */}
         <section className="mx-auto max-w-[1600px]">
-          {/* Título */}
-          <div className="mb-8">
-            <h1 className="mb-2 font-serif text-5xl md:text-6xl font-light text-black">
-              Mapa de Ocupación
-            </h1>
-            <p className="text-gray-700">
-              Visualiza y gestiona el estado de todas las habitaciones en tiempo real
-            </p>
-          </div>
-
           {/* Leyenda */}
           <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div className="flex items-center gap-2">
@@ -506,65 +498,106 @@ function ModalNuevaReserva({ room, date, onClose, onSave }) {
     } catch (saveError) { setError("Error al guardar reserva: " + saveError.message); setIsLoading(false); }
     // No setIsLoading(false) si onSave cierra el modal
   };
-
-  return (
+return (
     <ModalPlaceholder
       title={`Reservar Habitación ${room?.numero}`}
       onClose={onClose}
-      footer={<button onClick={onClose} className="button-secondary" disabled={isLoading}>Cancelar</button>} // Usando clase CSS
+      footer={<button onClick={onClose} className="button-secondary rounded-full bg-gray-100 p-1 pl-2 pr-2 cursor-pointer hover:bg-gray-200 hover:border-1 border-gray-300" disabled={isLoading}>Cancelar</button>} // Usando clase CSS
     >
       {/* --- PASO 1 --- */}
       {step === 1 && (
-        <form onSubmit={handleSearch} className="space-y-3">
-          <label className="label-style">Paso 1: Identificar Cliente</label>
-          <input type="email" placeholder="Buscar por Email..." value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} className="input-style" required disabled={isLoading}/>
-          <button type="submit" className="button-primary w-full" disabled={isLoading}>
-            {isLoading && searchStatus === "loading" ? "Buscando..." : "Buscar Cliente"}
-          </button>
-        </form>
+        <div className="p-4 pb-1  bg-gray-50 rounded-lg shadow-inner ">
+          <form onSubmit={handleSearch} className="space-y-4">
+            <label className="label-style text-base font-semibold text-gray-800">Paso 1: Identificar Cliente</label>
+            <input type="email" placeholder="Buscar por Email..." value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} className="input-style ml-3 rounded-sm pl-2 border-1 border-gray-700 min-w-50 " required disabled={isLoading}/>
+            <button type="submit" className="button-primary w-full mt-5 mb-5  cursor-pointer border-green-200 rounded-lg bg-green-100 hover:border-1 hover:bg-emerald-100" disabled={isLoading}>
+              {isLoading && searchStatus === "loading" ? "Buscando..." : "Buscar Cliente"}
+            </button>
+          </form>
+        </div>
       )}
+
+      {/* --- FORMULARIO DE CREACIÓN (SI NO SE ENCUENTRA) --- */}
       {searchStatus === "notFound" && step === 1 && (
-        <form onSubmit={handleCreateClient} className="mt-4 space-y-3 border-t border-gray-200 pt-4">
-          <p className="text-center text-sm text-red-600">Cliente no encontrado. Registrar nuevo cliente.</p>
-          <div><label className="label-style">Email (invitación)</label><input type="email" value={searchEmail} disabled className="input-style-disabled mt-1"/></div>
-          <div><label className="label-style">Nombre</label><input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="input-style mt-1" required disabled={isLoading}/></div>
-          <div><label className="label-style">Apellido</label><input type="text" value={apellido} onChange={e => setApellido(e.target.value)} className="input-style mt-1" required disabled={isLoading}/></div>
-          <div><label className="label-style">DNI</label><input type="text" value={dni} onChange={e => setDni(e.target.value)} className="input-style mt-1" required disabled={isLoading}/></div>
-          <button type="submit" className="button-success w-full" disabled={isLoading}>
-            {isLoading ? "Creando..." : "Crear e Invitar Cliente"}
-          </button>
+        <form onSubmit={handleCreateClient} className="mt-4 space-y-4">
+          
+          {/* Panel de Información Suave */}
+          <div className="p-3 rounded-md bg-blue-50 border border-blue-200">
+            <p className="text-sm text-blue-800 flex items-center">
+              <svg className="inline w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" ></path></svg>
+              Cliente no encontrado. Complete los datos para registrarlo.
+            </p>
+          </div>
+
+          {/* Campos de Creación */}
+          <div className="space-y-3 border-t border-gray-200 pt-4  pl-5 pr-10">
+            <div><label className="label-style">Email (para invitación)</label><input type="email" value={searchEmail} disabled className="input-style-disabled  mt-1 ml-2 w-50 font-medium"/></div>
+            <div><label className="label-style">Nombre</label><input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="input-style rounded-lg mt-1 ml-2 border-black border-1 pl-2" required disabled={isLoading}/></div>
+            <div><label className="label-style">Apellido</label><input type="text" value={apellido} onChange={e => setApellido(e.target.value)} className="input-style mt-1 ml-2 border-black border-1 pl-2 rounded-lg" required disabled={isLoading}/></div>
+            <div><label className="label-style">DNI</label><input type="text" value={dni} onChange={e => setDni(e.target.value)} className="input-style mt-1 ml-10 border-black border-1 pl-2 rounded-lg " required disabled={isLoading}/></div>
+    
+            <button type="submit" className="button-success w-full max-w-50  bg-green-100 cursor-pointer rounded-lg mt-3 hover:shadow-2xl- hover:border-1 border-green-200" disabled={isLoading}>
+              {isLoading ? "Creando..." : "Crear e Invitar Cliente"}
+            </button>
+          </div>
         </form>
       )}
 
       {/* --- PASO 2 --- */}
       {step === 2 && cliente && (
-        <form onSubmit={handleConfirmReserva} className="space-y-3">
+        <form onSubmit={handleConfirmReserva} className="space-y-3 ml-5 mr-5">
           <div className="rounded bg-green-100 p-2 text-sm text-green-800">Cliente: {cliente.nombre} {cliente.apellido} (DNI: {cliente.dni})</div>
-          <p className="text-sm font-medium text-gray-800">Habitación: {room?.numero} ({room?.type})</p>
-          <p className="text-sm font-medium text-gray-800">Check-in: {format(date, "PPP", { locale: es })}</p>
+          <p className="text-sm font-medium text-gray-800 pl-1">Habitación: {room?.numero} ({room?.type})</p>
+          <p className="text-sm font-medium text-gray-800 pl-1">Check-in: {format(date, "PPP", { locale: es })}</p>
           <div>
-            <label className="label-style">Fecha de Check-out</label>
-            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} min={format(addDays(date, 1), 'yyyy-MM-dd')} className="input-style mt-1" required disabled={isLoading}/>
+            <label className="label-style mr-2 pl-1">Fecha de salida</label>
+            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} min={format(addDays(date, 1), 'yyyy-MM-dd')} className="input-style mt-1 cursor-pointer bg-gray-100 rounded-xl pl-2 pr-2" required disabled={isLoading}/>
           </div>
-          {precioCalculado > 0 && <p className="text-sm font-semibold text-gray-900">Precio Total: ${precioCalculado}</p>}
-          <button type="submit" className="button-primary w-full" disabled={isLoading || precioCalculado <= 0}>
+          {precioCalculado > 0 && <p className="text-lg font-semibold text-black text-center mt-5">Precio Total: ${precioCalculado}</p>}
+          <button type="submit" className="button-primary w-full mt-5 pt-1 pb-1  cursor-pointer rounded-md text-white bg-red-500 hover:bg-red-800" disabled={isLoading || precioCalculado <= 0}>
             {isLoading ? "Guardando..." : "Confirmar Reserva"}
           </button>
         </form>
       )}
       {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
 
-      {/* Estilos rápidos (mueve a CSS global o config de Tailwind) */}
+      {/* --- ESTILOS MEJORADOS --- */}
       <style jsx>{`
-        .input-style { @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm; }
-        .input-style-disabled { @apply block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm sm:text-sm cursor-not-allowed; }
-        .label-style { @apply block text-sm font-medium text-gray-700; }
-        .button-primary { @apply rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50; }
-        .button-success { @apply rounded bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 disabled:opacity-50; }
-        .button-danger { @apply rounded bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50; }
-        .button-secondary { @apply rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-50; }
+        .input-style { 
+          @apply block w-full rounded-md border-gray-300 shadow-sm 
+          focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
+          transition-colors duration-150; 
+        }
+        .input-style-disabled { 
+          @apply block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm sm:text-sm cursor-not-allowed; 
+        }
+        .label-style { 
+          @apply block text-sm font-medium text-gray-700; 
+        }
+        
+        /* Botones con rounded-md y colores más suaves */
+        .button-primary { 
+          @apply rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm 
+          hover:bg-indigo-700 disabled:opacity-50
+          transition-colors duration-150; 
+        }
+        .button-success { 
+          @apply rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-white shadow-sm 
+          hover:bg-green-600 disabled:opacity-50
+          transition-colors duration-150; 
+        }
+        .button-danger { 
+          @apply rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm 
+          hover:bg-red-600 disabled:opacity-50
+          transition-colors duration-150; 
+        }
+        .button-secondary { 
+          @apply rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm 
+          hover:bg-gray-50 disabled:opacity-50
+          transition-colors duration-150; 
+        }
       `}</style>
     </ModalPlaceholder>
   );
 }
-
+ 
