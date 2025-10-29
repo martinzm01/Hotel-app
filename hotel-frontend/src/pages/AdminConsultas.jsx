@@ -6,9 +6,12 @@ export default function AdminConsultas() {
 
 
     return (
-            <main className="bg-gray-50" >
+            <main className="bg-gray-200"
+            style={{                
+
+}} >
             <HotelHeader/>
-            <div className="p-6 min-h-screen  bg-background  bg-gray-50">
+            <div className="p-6 min-h-screen  bg-background ">
                 <div className="space-y-6">
                     <TableAdminCosulta />
                 </div>

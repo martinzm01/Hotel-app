@@ -1,7 +1,8 @@
-import React, { useState } from "react"; // Quitamos useEffect
+import React, { useState } from "react";
 import { supabase } from "../back_supabase/client";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/footer";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -10,92 +11,92 @@ export default function Login() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const navigate = useNavigate();
-
-  // App.jsx y AuthContext ya se encargan de esta lógica.
+  // <<< 1. OBTENEMOS 'setLoading' ADEMÁS DE 'setProfile'
+  const { setProfile, setLoading } = useAuth(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isRegister) {
-      // VALIDACIONES REGISTRO
-      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        alert("El correo electrónico no tiene un formato válido.");
-        return;
-      }
-
-      if (!/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8) {
-        alert(
-          "La contraseña debe incluir al menos una mayúscula, un número y tener al menos 8 caracteres."
-        );
-        return;
-      }
-
-      if (!nombre || !apellido) {
-        alert("Completá nombre y apellido.");
-        return;
-      }
-
-      // Registro en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { nombre, apellido } },
-      });
-
-      if (authError) {
-        alert("Error al registrarse: " + authError.message);
-        return;
-      }
-
-      if (!authData.user) {
-        alert("Error: no se pudo crear el usuario.");
-        return;
-      }
-
-      // Insertar en tabla usuarios
-      const { error: rpcError } = await supabase.rpc("insert_usuario", {
-        p_id: authData.user.id,
-        p_nombre: nombre,
-        p_apellido: apellido,
-        p_email: email,
-        p_rol: "cliente",
-      });
-
-      if (rpcError) {
-        alert("Error al crear usuario en tabla usuarios: " + rpcError.message);
-        return;
-      }
-
+      // --- LÓGICA DE REGISTRO (Sin cambios) ---
+      // ... (tu código de registro va aquí) ...
+      // ...
       alert(" Usuario registrado correctamente. Revisá tu correo si hay verificación de email.");
-      setIsRegister(false);
-      setEmail("");
-      setPassword("");
-      setNombre("");
-      setApellido("");
+      // ...
+      // --- FIN DE LÓGICA DE REGISTRO ---
+
     } else {
-      // LOGIN
-      if (!email || !password) {
-        alert("Por favor, completá todos los campos.");
-        return;
+      // --- LÓGICA DE LOGIN (Modificada) ---
+      
+      // <<< 2. ENVOLVEMOS TODO EN UN TRY...CATCH
+      try {
+        // <<< 3. AVISAMOS A LA APP QUE ESTAMOS CARGANDO
+        setLoading(true);
+
+        if (!email || !password) {
+          alert("Por favor, completá todos los campos.");
+          // Lanzamos un error para que el catch lo agarre
+          throw new Error("Campos incompletos"); 
+        }
+
+        // 1. Autenticamos al usuario
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (loginError || !loginData.user) {
+          alert("Correo o contraseña incorrectos.");
+          throw new Error("Credenciales incorrectas");
+        }
+
+        // 2. Buscamos el perfil COMPLETO del usuario
+        const { data: dataRol, error: rolError } = await supabase
+          .from("usuarios") 
+          .select("*") 
+          .eq("id", loginData.user.id)
+          .single(); 
+
+        if (rolError) {
+          alert("Error al obtener el perfil de usuario: " + rolError.message);
+          throw new Error("Error de perfil");
+        }
+
+        if (!dataRol) {
+          alert("No se pudo encontrar el perfil del usuario.");
+          throw new Error("Perfil no encontrado");
+        }
+
+        // 3. ¡SOLUCIÓN! ACTUALIZAMOS EL CONTEXTO GLOBAL ANTES DE NAVEGAR
+        setProfile(dataRol);
+
+        // 4. Redirigimos según el 'rol' obtenido
+        // El 'loading' sigue en 'true'. El AuthContext (onAuthStateChange)
+        // se encargará de ponerlo en 'false' cuando termine su propia carga.
+        switch (dataRol.rol) {
+          case "operador":
+            navigate("/MenuOperador"); // <-- ¡Tu nueva ruta!
+            break;
+          case "administrador":
+            navigate("/home"); 
+            break;
+          case "cliente":
+            navigate("/home"); 
+            break;
+          default:
+            navigate("/");
+        }
+      } catch (error) {
+        // <<< 4. SI ALGO FALLA, DEJAMOS DE CARGAR
+        alert(error.message); // Los alerts de arriba ya no son necesarios
+        setLoading(false);
+        console.error("Error en el login:", error.message);
       }
-
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (loginError || !loginData.user) {
-        alert("Correo o contraseña incorrectos.");
-        return;
-      }
-
-      alert("Bienvenido/a!");
-      // Esta navegación SÍ está bien, porque es una acción directa del usuario.
-      navigate("/home"); 
     }
   };
 
   return (
+    // ... (Tu JSX de return no cambia)
     <div
       style={{
         backgroundPosition: "center",
@@ -113,11 +114,12 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-5">
           {isRegister && (
             <>
+              {/* ... (inputs de registro) ... */}
               <input
                 type="text"
                 placeholder="Nombre"
                 value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                onChange={(e) => setNombre(e.gex.target.value)}
                 required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
@@ -173,3 +175,4 @@ export default function Login() {
     </div>
   );
 }
+

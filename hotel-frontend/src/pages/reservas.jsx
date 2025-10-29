@@ -9,7 +9,7 @@ export default function Reservas() {
     return (
             <main className="bg-gray-50" >
             <HotelHeader/>
-            <div className="p-6 min-h-screen  bg-background  bg-gray-50">
+            <div className="p-6 min-h-screen  bg-background  bg-white">
               <div className="space-y-6">
                   <TableAdminReservas />
               </div>

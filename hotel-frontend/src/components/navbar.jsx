@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from '../context/ThemeContext'; // Importado
+import { Sun, Moon } from 'lucide-react'; // Importados
 
 export default function HotelNavbar() {
+  const { theme, toggleTheme } = useTheme(); // Hook en uso
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { session, profile, logout } = useAuth();
 
-  // 1. Definimos las clases de estilo una sola vez para reutilizarlas
-  const desktopLinkClasses = "font-sans text-sm font-light tracking-wide text-white/90 transition-colors hover:text-white";
-  const mobileLinkClasses = "block py-3 font-sans text-base font-light text-white/90 transition-colors hover:text-white";
-  const authButtonClasses = "border border-white/30 bg-transparent text-white font-light px-4 py-2 rounded-lg hover:bg-white hover:text-black transition";
+  // 1. Clases actualizadas para modo claro (default) y oscuro (dark:)
+  const desktopLinkClasses = "font-sans text-sm font-light tracking-wide text-gray-700 dark:text-white/90 transition-colors hover:text-black dark:hover:text-white";
+  const mobileLinkClasses = "block py-3 font-sans text-base font-light text-gray-700 dark:text-white/90 transition-colors hover:text-black dark:hover:text-white";
+  const authButtonClasses = "border border-gray-700/30 text-gray-700 dark:border-white/30 dark:text-white font-light px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-black transition";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -25,58 +28,47 @@ export default function HotelNavbar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  // 2. Lógica de enlaces actualizada según los nuevos roles
+  // 2. Lógica de enlaces (sin cambios)
   const getNavLinks = () => {
-    // "Home" es común para todos los usuarios, logueados o no.
     const links = [
       { href: "/home", label: "Home" }
     ];
 
     if (!session) { 
-      // --- Usuario Público (No logueado) ---
       links.push(
         { href: "/habitaciones", label: "Habitaciones" }
-        // El botón "Login" se maneja por separado
       );
-
     } else if (profile?.rol === 'cliente') { 
-      // --- Rol: Cliente ---
       links.push(
         { href: "/habitaciones", label: "Habitaciones" },
         { href: "/consultas", label: "Consultas" },
-        // Reemplazo de 'reservas' por 'historialReservas'
         { href: "/historialReservas", label: "Reservas" } 
       );
-
     } else if (profile?.rol === 'administrador') { 
-      // --- Rol: Administrador ---
       links.push(
         { href: "/admin", label: "Administración" }
       );
-
     } else if (profile?.rol === 'operador') {
-      // --- Rol: Operador ---
       links.push(
+        { href: "/MenuOperador", label: "Inicio" },
         { href: "/adminconsultas", label: "Consultas" },
         { href: "/mapa", label: "Mapa" },
-        { href: "/reservas", label: "Reservas" } // El enlace que antes era de clientes
+        { href: "/reservas", label: "Reservas" },
       );
     }
-    
-    // Si un usuario está logueado pero no tiene un rol asignado (ej: profile.rol es null),
-    // solo verá "Home".
-
     return links;
   };
 
   const navLinks = getNavLinks();
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-black/80 backdrop-blur-md" : "bg-transparent"}`}>
+    // 3. Clases de <nav> actualizadas
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/80 dark:bg-black/80 backdrop-blur-md" : "bg-white dark:bg-transparent"}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           <Link to="/" className="flex items-center">
-            <span className="font-serif text-2xl font-light tracking-wider text-white">Hotel M&L</span>
+            {/* 4. Título actualizado */}
+            <span className="font-serif text-2xl font-light tracking-wider text-gray-900 dark:text-white">Hotel M&L</span>
           </Link>
 
           {/* Navegación desktop */}
@@ -86,16 +78,30 @@ export default function HotelNavbar() {
                 {link.label}
               </Link>
             ))}
+
+            {/* --- Botón de Tema (Desktop) --- */}
+            {/*<button
+              onClick={toggleTheme}
+              // 5. Clases actualizadas para el botón de tema
+              className="text-gray-700 dark:text-white/90 transition-colors hover:text-black dark:hover:text-white"
+              aria-label="Cambiar tema"
+            >
+              {theme === 'light' ? (
+                <Moon size={20} />
+              ) : (
+                <Sun size={20} className="text-yellow-400" />
+              )}
+            </button>*/}
+
             {!session ? (
-              // El enlace a Login para todos (cuando no están logueados)
               <Link to="/login" className={authButtonClasses}>Login</Link>
             ) : (
               <button onClick={handleLogout} className={authButtonClasses}>Cerrar Sesión</button>
             )}
           </div>
 
-          {/* Botón menú móvil */}
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white md:hidden" aria-label="Toggle menu">
+          {/* 6. Botón menú móvil actualizado */}
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 dark:text-white md:hidden" aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -103,17 +109,38 @@ export default function HotelNavbar() {
 
       {/* Menú móvil (Simplificado) */}
       {isMenuOpen && (
-        <div className="border-t border-white/10 bg-black/95 backdrop-blur-md md:hidden">
+        // 7. Fondo de menú móvil actualizado
+        <div className="border-t border-gray-300/50 dark:border-white/10 bg-white/95 dark:bg-black/95 backdrop-blur-md md:hidden">
           <div className="space-y-1 px-4 pb-6 pt-4">
-            {/* 3. Simplemente volvemos a renderizar los enlaces con las clases de móvil */}
+            
             {navLinks.map(link => (
               <Link key={link.href} to={link.href} className={mobileLinkClasses} onClick={closeMenu}>
                 {link.label}
               </Link>
             ))}
+
+            {/* --- Botón de Tema (Móvil) --- */}
+            <button
+              onClick={() => {
+                toggleTheme();
+                closeMenu();
+              }}
+              className={mobileLinkClasses} // Usa la misma clase que los otros links
+              aria-label="Cambiar tema"
+            >
+              {theme === 'light' ? (
+                <span className="flex items-center gap-2">
+                  <Moon size={18} /> Tema Oscuro
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Sun size={18} className="text-yellow-400" /> Tema Claro
+                </span>
+              )}
+            </button>
+
             <div className="pt-4">
               {!session ? (
-                // El enlace a Login para todos (cuando no están logueados)
                 <Link to="/login" className={`${authButtonClasses} block w-full text-center`} onClick={closeMenu}>Login</Link>
               ) : (
                 <button onClick={() => { handleLogout(); closeMenu(); }} className={`${authButtonClasses} block w-full`}>Cerrar Sesión</button>
@@ -125,3 +152,4 @@ export default function HotelNavbar() {
     </nav>
   );
 }
+

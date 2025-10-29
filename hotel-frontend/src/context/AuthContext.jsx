@@ -14,14 +14,14 @@ export const AuthProvider = ({ children }) => {
     // 1. Obtiene la sesión inicial al cargar la app
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setLoading(false);
+      // No pongas setLoading(false) aquí, espera a que el perfil también cargue
     });
 
     // 2. Escucha cambios de autenticación (login/logout)
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        setLoading(false); // Asegura que la app se muestre tras un cambio
+        // No pongas setLoading(false) aquí tampoco
       }
     );
 
@@ -51,14 +51,18 @@ export const AuthProvider = ({ children }) => {
 
   // useEffect para obtener el perfil del usuario cuando la sesión cambia
   useEffect(() => {
+    setLoading(true); // Empezamos a cargar CADA VEZ que la sesión cambie
+    
     if (!session) {
       setProfile(null);
+      setLoading(false); // Si no hay sesión, terminamos de cargar
       return;
     }
 
+    // <<< ¡CAMBIO CLAVE AQUÍ! >>>
     supabase
       .from('usuarios')
-      .select('rol')
+      .select('*') // <-- Pedimos TODOS los datos (nombre, email, Telefono, rol, etc.)
       .eq('id', session.user.id)
       .single()
       .then(({ data, error }) => {
@@ -66,19 +70,25 @@ export const AuthProvider = ({ children }) => {
           console.error("Error al obtener el perfil:", error.message);
           setProfile(null);
         } else {
-          setProfile(data);
+          setProfile(data); // 'profile' ahora es { id: ..., nombre: ..., Telefono: ... }
         }
+        setLoading(false); // Terminamos de cargar (con o sin perfil)
       });
-  }, [session]);
+  }, [session]); // Se ejecuta cada vez que 'session' cambia
 
   const logout = async () => {
     await supabase.auth.signOut();
   };
 
-  const value = { session, profile, loading, logout };
+  // <<< ¡CORRECCIÓN DE SINTAXIS AQUÍ! >>>
+  const value = { session, profile, loading, logout, setProfile, setLoading };
 
   return (
     <AuthContext.Provider value={value}>
+      {/* Mostramos 'children' solo cuando NO estamos cargando.
+        Esto previene que 'ReservaModal' intente acceder a 'profile' 
+        mientras 'loading' es true.
+      */}
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -87,4 +97,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-
