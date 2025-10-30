@@ -23,15 +23,16 @@ export default function Admin() {
       >
         <div className="mt-10  pt-10">
         <h2 className="font-serif text-light font-light text-foreground text-7xl pt-5">
+
           Administración de Habitaciones
         </h2>
         </div>
         {isDashboard ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl p-8 pt-1  ">
-            {/* Administración de Habitaciones */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl p-8 pt-1  mb-10 ">
+            {/* Tarjeta 1 -Administración de Habitaciones */}
             <NavLink
               to="/admin/habitaciones"
-              className="group bg-gray-800/70 hover:bg-gray-700/70 rounded-2xl shadow-lg p-10 mr-2 pt-20 pb-20 mt-20 text-center flex flex-col items-center transition-transform transform hover:scale-105"
+              className="group bg-gray-800/70 hover:bg-gray-700/70 rounded-2xl shadow-lg p-10 mr-2 pt-20 pb-20 mt-20  text-center flex flex-col items-center transition-transform transform hover:scale-105"
             >
               <BedDouble className="w-16 h-16 mb-4 text-blue-400 group-hover:animate-pulse" />
               <h2 className="text-2xl font-medium mb-2 font-serif">
@@ -42,7 +43,7 @@ export default function Admin() {
               </p>
             </NavLink>
 
-            {/* Gestión de Operadores */}
+            {/*Tarjeta 2 - Gestión de Operadores */}
             <NavLink
               to="/admin/operadores"
               className="group bg-gray-800/70 hover:bg-gray-700/70 rounded-2xl shadow-lg p-10 pt-20 pb-20 mt-20 text-center flex flex-col items-center transition-transform transform hover:scale-105"
