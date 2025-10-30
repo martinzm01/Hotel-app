@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { supabase } from "../back_supabase/Client";
+import { supabase } from "../back_supabase/client";
 
 const hotelImages = [
   "/assets/piscina del hotel.png",

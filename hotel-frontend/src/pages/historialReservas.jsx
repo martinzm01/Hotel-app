@@ -1,7 +1,7 @@
 //FORMULARIO PARA RESERVAS 
 
 import React, { useState } from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 const roomPrices = {
   Doble: 120,
   Suite: 180,
