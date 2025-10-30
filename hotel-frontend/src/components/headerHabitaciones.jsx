@@ -25,6 +25,13 @@ const pageContent = {
     title: "Panel de Administración",
     subtitle: "Gestiona habitaciones, usuarios y reservas desde un solo lugar.",
   },
+
+    "/admin/habitaciones": {
+    title: "Gestion de Habitaciones",
+    subtitle: "Gestiona habitaciones, usuarios y reservas desde un solo lugar.",
+  },
+  
+
   "/login": {
     title: "Iniciar Sesión",
     subtitle: "Accede al panel de administración del hotel.",

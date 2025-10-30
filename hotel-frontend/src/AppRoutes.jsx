@@ -41,7 +41,7 @@ function AppRoutes() {
       {/* --- Rutas Protegidas para Administradores --- */}
       {/* Solo usuarios con rol 'administrador' pueden acceder */}
       <Route element={<ProtectedRoute allowedRoles={['administrador']} />}>
-        <Route path="/admin" element={<Administracion />}>
+        <Route path="/Admin" element={<Administracion />}>
           {/* Rutas anidadas que se muestran dentro de Administracion.jsx */}
           <Route index element={<Navigate to="habitaciones" replace />} />
           <Route path="habitaciones" element={<AdminHabitaciones />} />
