@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../back_supabase/client"; 
-import Header from "../components/headerHabitaciones";
 import RoomCardAdmin from "../components/RoomcardAdmin";
 import Button from "../components/ui/Button";
 
@@ -176,20 +175,19 @@ export default function AdministracionPage() {
   // --- RENDERIZADO (JSX) ---
 
   if (loading) {
-    return <main><Header /><section className="py-20 text-center"><p>Cargando habitaciones...</p></section></main>;
+    return <main><section className="py-20 text-center"><p>Cargando habitaciones...</p></section></main>;
   }
 
   if (error) {
-    return <main><Header /><section className="py-20 text-center"><p className="text-red-600">Error al cargar: {error}</p></section></main>;
+    return <main><section className="py-20 text-center"><p className="text-red-600">Error al cargar: {error}</p></section></main>;
   }
 
   return (
     <main>
-      <Header />
-      <section className="py-20">
+      <section >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* ... (Encabezado de la página - sin cambios) ... */}
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-8 flex items-center justify-between mt-10">
             <div>
               <h2 className="font-serif text-4xl font-light text-foreground">
                 Administración de Habitaciones

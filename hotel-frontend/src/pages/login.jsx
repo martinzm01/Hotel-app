@@ -75,10 +75,10 @@ export default function Login() {
         // se encargará de ponerlo en 'false' cuando termine su propia carga.
         switch (dataRol.rol) {
           case "operador":
-            navigate("/MenuOperador"); // <-- ¡Tu nueva ruta!
+            navigate("/MenuOperador"); // 
             break;
           case "administrador":
-            navigate("/home"); 
+            navigate("/admin"); 
             break;
           case "cliente":
             navigate("/home"); 
