@@ -1,80 +1,130 @@
-import React, { useState } from "react";
-import { supabase } from "../back_supabase/client"; // Ajusta la ruta
-import ModalPlaceholder from "./ModalPlaceholder"; // Ajusta la ruta
+import React, { useState, useEffect } from "react";
+import { supabase } from "../back_supabase/client";
+import ModalPlaceholder from "./ModalPlaceholder";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
-// --- AÑADIMOS export default ---
 export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [metodoPagoSeleccionado, setMetodoPagoSeleccionado] = useState('Efectivo');
+  const [metodoPagoBD, setMetodoPagoBD] = useState(null); // Estado para el método de pago real
 
-  // Actualiza estado de RESERVA
+  // 🔹 useEffect: Busca el método de pago si está "Pendiente de confirmación" o "Pagado"
+  //    para poder mostrarlo.
+  useEffect(() => {
+    const fetchMetodoPago = async () => {
+      if (
+        reserva.estado_pago === "Pendiente de confirmación" ||
+        reserva.estado_pago?.toLowerCase() === "pagado"
+      ) {
+        setIsLoading(true);
+        try {
+          const { data, error: fetchError } = await supabase
+            .from("pagos")
+            .select("metodo_pago")
+            .eq("id_reserva", reserva.id)
+            .single();
+
+          if (fetchError) throw fetchError;
+          if (data) setMetodoPagoBD(data.metodo_pago);
+        } catch (err) {
+          console.error("Error al obtener método de pago:", err.message);
+          setError(
+            "No se pudo cargar el método de pago desde la base de datos."
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchMetodoPago();
+  }, [reserva.id, reserva.estado_pago]);
+
+  // 🔹 handleUpdateStatus (Sin cambios)
   const handleUpdateStatus = async (nuevoEstado) => {
-    setIsLoading(true); setError("");
+    setIsLoading(true);
+    setError("");
     try {
-      // Asegúrate que tu PK de reservas se llama 'id'
+      const updatePayload = { estado_reserva: nuevoEstado };
+      if (nuevoEstado === "Cancelada") {
+        updatePayload.estado_pago = "Cancelado";
+      }
       const { error: updateError } = await supabase
-        .from("reservas").update({ estado_reserva: nuevoEstado }).eq("id", reserva.id);
-      if (updateError) throw updateError;
-      onUpdate(); // Refresca y cierra
-    } catch (statusError) { setError("Error: " + statusError.message); setIsLoading(false); }
-  };
-
-  // Registra pago
-  const handleRegistrarPago = async () => {
-    setIsLoading(true); setError("");
-    try {
-      // --- PASO 1: Insertar en la tabla 'pagos' ---
-      const { error: pagoError } = await supabase.from("pagos").insert({
-        // Usa la PK correcta de la reserva (asumiendo 'id')
-        id_reserva: reserva.id,
-        monto: reserva.precio_total, // Asume pago completo
-        metodo_pago: metodoPagoSeleccionado,
-        // Asegúrate que tu columna en 'pagos' se llama 'fecha_pago'
-        fecha_pago: new Date().toISOString()
-      });
-      if (pagoError) throw pagoError;
-
-      // --- PASO 2: Actualizar 'estado_pago' en la reserva ---
-      const { error: reservaError } = await supabase
         .from("reservas")
-        // Usa el valor exacto que quieres (ej. 'Pagado')
-        .update({ estado_pago: "Pagado" })
-        // Asegúrate que la PK de reservas es 'id'
+        .update(updatePayload)
         .eq("id", reserva.id);
-      if (reservaError) console.warn("Pago insertado pero falló update en reserva:", reservaError);
-
-      console.log("Pago registrado exitosamente");
-      onUpdate(); // Refresca y cierra
-
-    } catch (pagoGeneralError) {
-      setError("Error al registrar el pago: " + pagoGeneralError.message);
-      setIsLoading(false); // Permite reintentar
+      if (updateError) throw updateError;
+      onUpdate();
+    } catch (statusError) {
+      setError("Error: " + statusError.message);
+      setIsLoading(false);
     }
   };
 
-  // Botones del footer
+  // 🔹 NUEVA FUNCIÓN: Confirmar Pago
+  //    Esta función solo actualiza el estado, ya no inserta pagos.
+  const handleConfirmarPago = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      // Nos aseguramos de que solo actúe si el estado es el correcto
+      if (reserva.estado_pago !== "Pendiente de confirmación") {
+        throw new Error("La reserva no está pendiente de confirmación.");
+      }
+
+      // Solo actualizamos la reserva a Pagado/Activa
+      const { error: reservaError } = await supabase
+        .from("reservas")
+        .update({
+          estado_pago: "Pagado",
+          estado_reserva: "Activa",
+        })
+        .eq("id", reserva.id);
+
+      if (reservaError) throw reservaError;
+
+      onUpdate();
+    } catch (pagoGeneralError) {
+      setError("Error al confirmar el pago: " + pagoGeneralError.message);
+      setIsLoading(false);
+    }
+  };
+
+  // 🔹 Footer MODIFICADO:
+  //    - Solo muestra el botón de "Confirmar Pago" si el estado es "Pendiente de confirmación".
   const footerButtons = (
     <div className="flex w-full justify-between items-center">
-      <button onClick={onClose} className="button-secondary rounded-full p-2 pr-4 pl-4 bg-gray-100 hover:bg-gray-200 cursor-pointer" disabled={isLoading}> Cerrar </button>
-      {reserva.estado_pago?.toLowerCase() !== "pagado" && (
-        <button onClick={handleRegistrarPago} className="button-success rounded-full p-2 pr-4 pl-4 bg-gray-100 hover:bg-gray-200 cursor-pointer" disabled={isLoading}>
-          {isLoading ? "Procesando..." : "Registrar Pago"}
+      <button
+        onClick={onClose}
+        className="button-secondary rounded-full p-2 px-4 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+        disabled={isLoading}
+      >
+        Cerrar
+      </button>
+
+      {/* 🔹 Solo mostrar el botón si el estado es 'Pendiente de confirmacion' */}
+      {reserva.estado_pago === "Pendiente de confirmación" &&
+      reserva.estado_reserva !== "Cancelada" ? (
+        <button
+          onClick={handleConfirmarPago} // 🔹 Usa la nueva función
+          className="button-success rounded-full p-2 px-4 bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
+          disabled={isLoading}
+        >
+          {isLoading ? "Confirmando..." : "Confirmar Pago"}
         </button>
-      )}
+      ) : null}
     </div>
   );
 
-    return (
+  return (
     <ModalPlaceholder
       title={`Detalle Reserva #${reserva.id}`}
       onClose={onClose}
       footer={footerButtons}
     >
       <div className="space-y-4 text-gray-800">
-        {/* Información General */}
+        {/* Información General (Sin cambios) */}
         <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Información General
@@ -106,7 +156,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
           </ul>
         </div>
 
-        {/* Estado */}
+        {/* Estado (Sin cambios) */}
         <div className="bg-white rounded-xl p-4 shadow border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Estado Actual
@@ -130,29 +180,38 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
           </div>
         </div>
 
-        {/* Método de pago */}
-        {reserva.estado_pago?.toLowerCase() !== "pagado" && (
-          <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
-            <h4 className="text-lg font-semibold text-gray-800 mb-3">
-              Método de pago
-            </h4>
-            <select
-              id="metodoPago"
-              value={metodoPagoSeleccionado}
-              onChange={(e) => setMetodoPagoSeleccionado(e.target.value)}
-              className="block w-full rounded-lg border border-gray-300 bg-white p-2.5 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-              disabled={isLoading}
-            >
-              <option value="Efectivo">Efectivo</option>
-              <option value="Visa">Tarjeta Visa</option>
-              <option value="Mastercard">Tarjeta Mastercard</option>
-              <option value="American Express">American Express</option>
-              <option value="Naranja">Tarjeta Naranja</option>
-            </select>
-          </div>
-        )}
+        {/* 🔹 Método de pago MODIFICADO:
+             Se eliminó el <select> y el caso para "Pendiente".
+        */}
+        <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
+          <h4 className="text-lg font-semibold text-gray-800 mb-3">
+            Método de pago
+          </h4>
 
-        {/* Acciones */}
+          {/* CASO 1: "Pendiente de confirmacion" o "Pagado". Mostramos el texto. */}
+          {reserva.estado_pago === "Pendiente de confirmación" ||
+          reserva.estado_pago?.toLowerCase() === "pagado" ? (
+            <p className="text-gray-700 text-sm">
+              {reserva.estado_pago === "Pendiente de confirmación"
+                ? "Método registrado (pendiente):"
+                : "Método utilizado:"}
+              <span className="font-semibold ml-1">
+                {isLoading
+                  ? "Cargando..."
+                  : metodoPagoBD || "No especificado"}
+              </span>
+            </p>
+          ) : (
+            /* CASO 2: Es "Cancelado", "Pendiente" (sin pago online) o cualquier otro. */
+            <p className="text-gray-700 text-sm italic">
+              {reserva.estado_pago === "Cancelado"
+                ? "El pago fue cancelado."
+                : "No hay un método de pago online registrado."}
+            </p>
+          )}
+        </div>
+
+        {/* Acciones (Sin cambios) */}
         <div className="bg-white rounded-xl p-4 shadow border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Acciones de Estado
@@ -167,23 +226,21 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
                 {isLoading ? "..." : "Realizar Check-in"}
               </button>
             )}
-
             {reserva.estado_reserva === "Activa" && (
               <button
                 onClick={() => handleUpdateStatus("Finalizada")}
-                className="bg-green-900 hover:bg-green-700 cursor-pointer text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
+                className="bg-green-900 hover:bg-green-700 text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Realizar Check-out"}
               </button>
             )}
-
             {["Pendiente", "Confirmada", "Activa"].includes(
               reserva.estado_reserva
             ) && (
               <button
                 onClick={() => handleUpdateStatus("Cancelada")}
-                className="bg-red-600 hover:bg-red-800 cursor-pointer text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
+                className="bg-red-600 hover:bg-red-800 text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Cancelar Reserva"}

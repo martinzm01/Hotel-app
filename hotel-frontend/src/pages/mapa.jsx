@@ -6,6 +6,8 @@ import { supabase } from "../back_supabase/client"; // Ajusta la ruta a tu clien
 import ModalPlaceholder from "../components/ModalPlaceholder"; // Ajusta la ruta a tu componente Modal
 import ModalDetalleReserva from "../components/ModalDetalleReserva"
 import Hotelheader from "../components/headerHabitaciones"
+import { LayoutGrid, CalendarCheck, MessageSquare } from "lucide-react";
+
 // Importamos las funciones de date-fns
 import {
   format,
@@ -208,30 +210,35 @@ export default function MapaOcupacion() {
     <div
       className="min-h-screen " // Padding top para dejar espacio al navbar fijo
       style={{
-        backgroundImage: "url('/assets/piscina del hotel.png')", // Verifica esta ruta
-        backgroundColor: "rgba(0,0,0,0.8)",
+        backgroundImage: "url('/assets/admin.png')", // Verifica esta ruta
+        backgroundColor: "rgba(0,0,0,0.6)",
         backgroundBlendMode: "darken",
         backgroundAttachment: "fixed",
         backgroundSize: "cover",
       }}
     >
       {/* Contenido principal con fondo semi-transparente o sólido */}
-        <Hotelheader/>
-      <main className="min-h-[calc(100vh-80px)] bg-gray-50/95 p-6 backdrop-blur-sm"> {/* Ajustado min-h y añadido backdrop */}
+      
+      <main className="min-h-[calc(100vh-80px)] backdrop-blur-sm p-6 ">
+        <div>
+          <h1 className="flex text-6xl m-20 ml-10 mb-10 text-white font-serif font-medium"> 
+          <LayoutGrid className="w-16 h-16 mb-4 text-gray-900 group-hover:animate-pulse pr-3" />  Mapa de ocupacion
+          </h1>
+          </div> {/* Ajustado min-h y añadido backdrop */}
         <section className="mx-auto max-w-[1600px]">
           {/* Leyenda */}
-          <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="   dark:bg-gray-900/80  text-white mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="h-4 w-8 rounded border border-emerald-300 bg-emerald-100" />
-              <span className="text-sm text-gray-700">Disponible</span>
+              <div className="h-4 w-8 rounded border border-emerald-300 bg-emerald-100 " />
+              <span className="text-sm text-white">Disponible</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-4 w-8 rounded border border-rose-300 bg-rose-100" />
-              <span className="text-sm text-gray-700">Ocupada</span>
+              <span className="text-sm text-white">Ocupada</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-4 w-8 rounded border border-slate-400 bg-slate-300" />
-              <span className="text-sm text-gray-700">En Mantenimiento</span>
+              <div className="h-4 w-8 rounded border border-slate-400 bg-slate-300 " />
+              <span className="text-sm text-white0">En Mantenimiento</span>
             </div>
           </div>
 
@@ -239,45 +246,45 @@ export default function MapaOcupacion() {
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <button
               onClick={() => setCurrentDate(addDays(currentDate, -7))}
-              className="rounded border bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100"
+              className="rounded border cursor-pointer bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-50/20 dark:bg-gray-900 dark:text-white"
             >
               Semana Anterior
             </button>
             <button
               onClick={() => setCurrentDate(startOfToday())}
-              className="rounded border bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100"
+              className="rounded border bg-white px-3  cursor-pointer py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100  dark:hover:bg-gray-50/20 dark:bg-gray-900 dark:text-white"
             >
               Hoy
             </button>
             <button
               onClick={() => setCurrentDate(addDays(currentDate, 7))}
-              className="rounded border bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100"
+              className="rounded border cursor-pointer  bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-100  dark:hover:bg-gray-50/20 dark:bg-gray-900 dark:text-white"
             >
               Semana Siguiente
             </button>
-            <span className="ml-4 text-sm text-gray-800">
+            <span className="ml-4 text-sm text-gray-800 dark:text-white">
               Mostrando: {format(startDate, "d MMM", { locale: es })} -{" "}
               {format(endDate, "d MMM yyyy", { locale: es })}
             </span>
           </div>
 
           {/* Grid del calendario */}
-          <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-lg border border-gray-300 shadow-sm">
             <div className="min-w-[1200px] divide-y divide-gray-100"> {/* Añadido divide-y */}
               {/* Header con fechas */}
               <div
-                className="grid bg-gray-50" // Color de fondo para header
+                className="grid bg-gray-900 text-white" // Color de fondo para header
                 style={{ gridTemplateColumns: `200px repeat(${daysToShow}, minmax(80px, 1fr))` }} // Ancho mínimo celda
               >
-                <div className="sticky left-0 z-10 border-r border-gray-200 bg-gray-100 p-3 text-sm font-semibold text-gray-800"> {/* Mejorado estilo header */}
+                <div className="sticky left-0 z-10 border-r border-gray-200 bg-gray-800 p-3 text-sm font-semibold text-white"> {/* Mejorado estilo header */}
                   Habitación
                 </div>
                 {dates.map((date, index) => (
                   <div key={index} className="border-r border-gray-200 p-2 text-center text-xs last:border-r-0"> {/* Reducido tamaño texto */}
-                    <div className="font-semibold text-gray-700">
+                    <div className="font-semibold text-white">
                       {format(date, "EEE", { locale: es }).replace(/^\w/, (c) => c.toUpperCase())}
                     </div>
-                    <div className="text-gray-500">
+                    <div className="text-white">
                       {format(date, "d MMM", { locale: es })}
                     </div>
                   </div>
@@ -286,9 +293,9 @@ export default function MapaOcupacion() {
 
               {/* Filas */}
               {isLoading ? (
-                <div className="p-10 text-center text-gray-500">Cargando datos...</div>
+                <div className="p-10 text-center text-white">Cargando datos...</div>
               ) : rooms.length === 0 ? (
-                 <div className="p-10 text-center text-gray-500">No se encontraron habitaciones.</div>
+                 <div className="p-10 text-center text-white">No se encontraron habitaciones.</div>
               ) : (
                 rooms.map((room) => (
                   <div
@@ -297,10 +304,10 @@ export default function MapaOcupacion() {
                     style={{ gridTemplateColumns: `200px repeat(${daysToShow}, minmax(80px, 1fr))` }}
                   >
                     {/* Columna info habitación */}
-                    <div className="sticky left-0 z-[5] border-r border-gray-100 bg-white p-3"> {/* Ajustado pading y z-index */}
+                    <div className="sticky left-0 z-[5] border-r border-gray-100 text-white bg-gray-900 p-3"> {/* Ajustado pading y z-index */}
                       <button
                         onClick={() => handleMantenimientoClick(room)}
-                        className="w-full text-left text-gray-800 transition-colors hover:text-blue-600"
+                        className="w-full text-left text-white transition-colors hover:text-blue-600"
                         title="Gestionar estado de mantenimiento"
                       >
                         <div className="mb-1 flex flex-wrap items-center gap-2"> {/* flex-wrap */}
@@ -412,7 +419,6 @@ export default function MapaOcupacion() {
 
 // ======================================================================
 // --- SUB-COMPONENTE: ModalNuevaReserva ---
-// (Mueve esto a src/components/ModalNuevaReserva.jsx si prefieres)
 // ======================================================================
 function ModalNuevaReserva({ room, date, onClose, onSave }) {
   const [step, setStep] = useState(1); // 1: Buscar/Crear Cliente, 2: Confirmar Reserva
@@ -430,21 +436,23 @@ function ModalNuevaReserva({ room, date, onClose, onSave }) {
   // Reserva
   const [fechaFin, setFechaFin] = useState("");
   const [precioCalculado, setPrecioCalculado] = useState(0);
+  
+  // 🔹 NUEVO ESTADO para el método de pago
+  const [metodoPago, setMetodoPago] = useState("Efectivo");
 
-  // Calcula precio
+  // Calcula precio (Sin cambios)
   useEffect(() => {
     if (date && fechaFin && room?.precio) {
       try {
         const inicio = date;
-        const fin = parseISO(fechaFin); // El input da string, parseamos a Date
-        // differenceInDays calcula noches. Si check-in=10, check-out=12 -> 2 noches.
+        const fin = parseISO(fechaFin); 
         const noches = differenceInDays(fin, inicio);
         setPrecioCalculado(noches > 0 ? room.precio * noches : 0);
       } catch (e) { console.error("Error calculando fechas:", e); setPrecioCalculado(0); }
     } else { setPrecioCalculado(0); }
   }, [date, fechaFin, room?.precio]);
 
-  // Busca cliente
+  // Busca cliente (Sin cambios)
   const handleSearch = async (e) => {
     e.preventDefault(); setIsLoading(true); setSearchStatus("loading"); setError(""); setCliente(null);
     const cleanEmail = searchEmail.trim();
@@ -463,13 +471,12 @@ function ModalNuevaReserva({ room, date, onClose, onSave }) {
     finally { setIsLoading(false); }
   };
 
-  // Crea e invita cliente (llama a Edge Function)
+  // Crea e invita cliente (Sin cambios)
   const handleCreateClient = async (e) => {
     e.preventDefault(); setIsLoading(true); setError("");
     try {
-      // LLAMA A TU EDGE FUNCTION 'invite-user'
       const { data: inviteData, error: inviteError } = await supabase.functions.invoke('invite-user', {
-         body: { email: searchEmail, nombre, apellido, dni }
+          body: { email: searchEmail, nombre, apellido, dni }
       });
       if (inviteError) throw inviteError;
       if (inviteData?.error) throw new Error(inviteData.error);
@@ -480,31 +487,62 @@ function ModalNuevaReserva({ room, date, onClose, onSave }) {
     finally { setIsLoading(false); }
   };
 
-  // Confirma y guarda la reserva
+  // 🔹 Confirma y guarda la reserva (MODIFICADO)
   const handleConfirmReserva = async (e) => {
     e.preventDefault();
     if (precioCalculado <= 0 || !fechaFin) { setError("Fecha de check-out inválida."); return; }
     if (!cliente) { setError("Cliente no identificado."); return; }
     setIsLoading(true); setError("");
+
     try {
-      const { error: insertError } = await supabase.from("reservas").insert({
-        id_habitacion: room.id, id_usuario: cliente.id,
-        fecha_inicio: format(date, "yyyy-MM-dd"), fecha_fin: fechaFin,
-        estado_reserva: "Activa", estado_pago: "Pendiente", // Ajusta estados si es necesario
-        precio_total: precioCalculado
-      });
-      if (insertError) throw insertError;
+      // 1. Insertar la reserva y obtener su ID
+      const { data: reservaData, error: reservaError } = await supabase
+        .from("reservas")
+        .insert({
+          id_habitacion: room.id,
+          id_usuario: cliente.id,
+          fecha_inicio: format(date, "yyyy-MM-dd"),
+          fecha_fin: fechaFin,
+          estado_reserva: "Activa",  // 🔹 Pagada y Activa de inmediato
+          estado_pago: "Pagado",    // 🔹 Pagada
+          precio_total: precioCalculado
+        })
+        .select() // 🔹 Pedimos que devuelva la fila insertada
+        .single(); // 🔹 Asumimos que solo insertamos una
+
+      if (reservaError) throw reservaError;
+      if (!reservaData) throw new Error("No se pudo crear la reserva.");
+
+      // 2. Insertar en la tabla de pagos usando el ID de la reserva
+      const { error: pagoError } = await supabase
+        .from("pagos")
+        .insert({
+          id_reserva: reservaData.id,    // 🔹 ID de la reserva recién creada
+          monto: precioCalculado,
+          metodo_pago: metodoPago,       // 🔹 Método de pago del selector
+          fecha_pago: new Date().toISOString(),
+        });
+
+      if (pagoError) {
+        // Opcional: Se podría intentar borrar la reserva si el pago falla
+        console.error("El pago falló, pero la reserva se creó. ID:", reservaData.id);
+        throw pagoError;
+      }
+      
+      // 3. Si todo va bien
       onSave(); // Llama a fetchData y cierra
-    } catch (saveError) { setError("Error al guardar reserva: " + saveError.message); setIsLoading(false); }
-    // No setIsLoading(false) si onSave cierra el modal
+    } catch (saveError) { 
+      setError("Error al guardar reserva: " + saveError.message); 
+      setIsLoading(false); // Solo si hay error
+    }
   };
 return (
     <ModalPlaceholder
       title={`Reservar Habitación ${room?.numero}`}
       onClose={onClose}
-      footer={<button onClick={onClose} className="button-secondary rounded-full bg-gray-100 p-1 pl-2 pr-2 cursor-pointer hover:bg-gray-200 hover:border-1 border-gray-300" disabled={isLoading}>Cancelar</button>} // Usando clase CSS
+      footer={<button onClick={onClose} className="button-secondary rounded-full bg-gray-100 p-1 pl-2 pr-2 cursor-pointer hover:bg-gray-200 hover:border-1 border-gray-300" disabled={isLoading}>Cancelar</button>}
     >
-      {/* --- PASO 1 --- */}
+      {/* --- PASO 1 (Sin cambios) --- */}
       {step === 1 && (
         <div className="p-4 pb-1  bg-gray-50 rounded-lg shadow-inner ">
           <form onSubmit={handleSearch} className="space-y-4">
@@ -517,19 +555,15 @@ return (
         </div>
       )}
 
-      {/* --- FORMULARIO DE CREACIÓN (SI NO SE ENCUENTRA) --- */}
+      {/* --- FORMULARIO DE CREACIÓN (Sin cambios) --- */}
       {searchStatus === "notFound" && step === 1 && (
         <form onSubmit={handleCreateClient} className="mt-4 space-y-4">
-          
-          {/* Panel de Información Suave */}
           <div className="p-3 rounded-md bg-blue-50 border border-blue-200">
             <p className="text-sm text-blue-800 flex items-center">
               <svg className="inline w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" ></path></svg>
               Cliente no encontrado. Complete los datos para registrarlo.
             </p>
           </div>
-
-          {/* Campos de Creación */}
           <div className="space-y-3 border-t border-gray-200 pt-4  pl-5 pr-10">
             <div><label className="label-style">Email (para invitación)</label><input type="email" value={searchEmail} disabled className="input-style-disabled  mt-1 ml-2 w-50 font-medium"/></div>
             <div><label className="label-style">Nombre</label><input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="input-style rounded-lg mt-1 ml-2 border-black border-1 pl-2" required disabled={isLoading}/></div>
@@ -543,7 +577,7 @@ return (
         </form>
       )}
 
-      {/* --- PASO 2 --- */}
+      {/* --- PASO 2 (MODIFICADO) --- */}
       {step === 2 && cliente && (
         <form onSubmit={handleConfirmReserva} className="space-y-3 ml-5 mr-5">
           <div className="rounded bg-green-100 p-2 text-sm text-green-800">Cliente: {cliente.nombre} {cliente.apellido} (DNI: {cliente.dni})</div>
@@ -553,15 +587,36 @@ return (
             <label className="label-style mr-2 pl-1">Fecha de salida</label>
             <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} min={format(addDays(date, 1), 'yyyy-MM-dd')} className="input-style mt-1 cursor-pointer bg-gray-100 rounded-xl pl-2 pr-2" required disabled={isLoading}/>
           </div>
+          
+          {/*   MÉTODO DE PAGO  */}
+          <div>
+            <label htmlFor="metodoPago" className="label-style pl-1">Método de Pago</label>
+            <select
+              id="metodoPago"
+              value={metodoPago}
+              onChange={(e) => setMetodoPago(e.target.value)}
+              className="input-style mt-1 bg-gray-100 rounded-full p-1 cursor-pointer ml-3" // Reutiliza la clase de estilo
+              disabled={isLoading}
+            >
+              <option value="Efectivo">Efectivo</option>
+              <option value="Visa">Tarjeta Visa</option>
+              <option value="Mastercard">Tarjeta Mastercard</option>
+              <option value="American Express">American Express</option>
+              <option value="Naranja">Tarjeta Naranja</option>
+              <option value="Transferencia">Transferencia Bancaria</option>
+            </select>
+          </div>
+          
           {precioCalculado > 0 && <p className="text-lg font-semibold text-black text-center mt-5">Precio Total: ${precioCalculado}</p>}
+          
           <button type="submit" className="button-primary w-full mt-5 pt-1 pb-1  cursor-pointer rounded-md text-white bg-red-500 hover:bg-red-800" disabled={isLoading || precioCalculado <= 0}>
-            {isLoading ? "Guardando..." : "Confirmar Reserva"}
+            {isLoading ? "Guardando..." : "Confirmar Reserva y Pago"}
           </button>
         </form>
       )}
       {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
 
-      {/* --- ESTILOS MEJORADOS --- */}
+      {/* --- ESTILOS (Sin cambios) --- */}
       <style jsx>{`
         .input-style { 
           @apply block w-full rounded-md border-gray-300 shadow-sm 
@@ -574,8 +629,6 @@ return (
         .label-style { 
           @apply block text-sm font-medium text-gray-700; 
         }
-        
-        /* Botones con rounded-md y colores más suaves */
         .button-primary { 
           @apply rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm 
           hover:bg-indigo-700 disabled:opacity-50
@@ -600,4 +653,3 @@ return (
     </ModalPlaceholder>
   );
 }
- 

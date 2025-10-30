@@ -5,12 +5,15 @@ import { supabase } from "../back_supabase/client";
 import HeaderHabitaciones from "../components/headerHabitaciones";
 import RoomCard from "../components/RoomCard";
 import Footer from "../components/footer";
+import ReservaModal from "../components/ModalReserva"; // <<< 1. IMPORTAR EL MODAL
 
 export default function Habitaciones() {
   // 2. DATOS AHORA SON ESTADOS: uno para la lista, uno para carga, uno para error
   const [habitaciones, setHabitaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null); // <<< 2. AÑADIR ESTADO PARA EL MODAL
+
 
   // 3. useEffect PARA CARGAR DATOS DESDE SUPABASE
   useEffect(() => {
@@ -98,6 +101,8 @@ export default function Habitaciones() {
                 image={room.imagen_url} // <-- Asegúrate que esto sea la URL/path
                 amenities={room.servicios}
                 estado={room.estado}
+                roomData={room} // <<< 3. PASAR EL OBJETO COMPLETO DE LA HABITACIÓN
+                onReserveClick={setSelectedRoom} // <<< 4. PASAR EL HANDLER PARA ABRIR EL MODAL
               />
             ))}
           </div>
@@ -112,6 +117,12 @@ export default function Habitaciones() {
         </div>
       </section>
       <Footer />
+      {/* --- 5. RENDERIZAR EL MODAL --- */}
+      <ReservaModal 
+        isOpen={!!selectedRoom} // El modal se abre si 'selectedRoom' no es null
+        onClose={() => setSelectedRoom(null)} // Función para cerrar el modal
+        room={selectedRoom} // Pasa los datos de la habitación seleccionada
+      />
     </main>
   );
 }

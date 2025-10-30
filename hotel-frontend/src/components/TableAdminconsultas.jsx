@@ -281,12 +281,12 @@ export default function TableAdminConsultas() {
             <input
             type="text"
             placeholder="Buscar por DNI (cliente u operador)..."
-            className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-white rounded-lg border px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
             value={filterDni}
             onChange={(e) => setFilterDni(e.target.value)}
             />
             <select
-            className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-1/2"
+            className="w-full bg-white rounded-lg border px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black sm:w-1/2"
             value={filterEstado}
             onChange={(e) => setFilterEstado(e.target.value)}
             >
@@ -302,7 +302,7 @@ export default function TableAdminConsultas() {
 
         {/* Tabla */}
         {!isLoading && !error && (
-            <div className="w-full max-w-7xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-white/[0.05] dark:bg-white/[0.03]">
+            <div className="w-full max-w-7xl overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-md dark:border-white/[0.05] ">
             <div className="max-w-full overflow-x-auto">
                 <Table>
                 <TableHeader className="border-b border-gray-100 bg-gray-50 dark:border-white/[0.05] dark:bg-gray-700">
