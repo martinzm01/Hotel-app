@@ -2,8 +2,8 @@ import React from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import Footer from "../components/footer";
 import { BedDouble, UserCog } from "lucide-react";
-import HotelHeader from "../components/headerHabitaciones";
 export default function Admin() {
+
   const location = useLocation();
 
   // Detecta si estás en la ruta base (/admin)
@@ -24,7 +24,7 @@ export default function Admin() {
         <div className="mt-10  pt-10">
         <h2 className="font-serif text-light font-light text-foreground text-7xl pt-5">
 
-          Administración de Habitaciones
+          Panel de Administración
         </h2>
         </div>
         {isDashboard ? (
