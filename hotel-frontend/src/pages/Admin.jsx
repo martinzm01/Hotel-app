@@ -24,7 +24,7 @@ export default function Admin() {
         <div className="mt-10  pt-10">
         <h2 className="font-serif text-light font-light text-foreground text-7xl pt-5">
 
-          Administración
+          Panel de Administración
         </h2>
         </div>
         {isDashboard ? (
