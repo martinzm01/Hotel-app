@@ -14,8 +14,8 @@ import {
 
 // Configuración de estado (sin cambios)
 const statusConfig = {
-  Confirmada: {
-    bg: 'bg-green-500/80',
+  Activa: {
+    bg: 'bg-blue-950/80',
     text: 'text-white',
     icon: <FaCheckCircle className="inline mr-1 mb-0.5" />,
   },
@@ -115,7 +115,7 @@ return (
             Reserva #{id}
           </div>
           <div
-            className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm bg-blue-950/80 ${statusStyle.text}`}
+            className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm ${statusStyle.bg} ${statusStyle.text}`}
           >
             {statusStyle.icon}
             {estado}
