@@ -85,7 +85,7 @@ export default function Habitaciones() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
           {/* Grilla de habitaciones */}
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className=" grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             
             {/* 7. MAPEAMOS EL ESTADO (que viene de Supabase) */}
             {habitaciones.map((room) => (

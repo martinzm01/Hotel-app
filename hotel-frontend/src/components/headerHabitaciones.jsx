@@ -11,7 +11,10 @@ const pageContent = {
     title: "Reservas",
     subtitle: "Gestiona las reservas de manera rápida y sencilla.",
   },
-
+  "/historialReservas": {
+    title: "Tu historial de reservas",
+    subtitle: "Gestiona tus reservas de manera rápida y sencilla.",
+  },
   "/adminconsultas": {
     title: "Consultas",
     subtitle: "Administra consultas de nuestros clientes.",

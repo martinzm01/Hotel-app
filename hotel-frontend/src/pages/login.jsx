@@ -17,13 +17,48 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isRegister) {
-      // --- LÓGICA DE REGISTRO (Sin cambios) ---
-      // ... (tu código de registro va aquí) ...
-      // ...
-      alert(" Usuario registrado correctamente. Revisá tu correo si hay verificación de email.");
-      // ...
-      // --- FIN DE LÓGICA DE REGISTRO ---
+if (isRegister) {
+      // --- LÓGICA DE REGISTRO (CONFIANDO EN EL TRIGGER) ---
+      try {
+        setLoading(true);
+
+        if (!email || !password || !nombre || !apellido) {
+          alert("Por favor, completá todos los campos.");
+          throw new Error("Campos incompletos");
+        }
+
+        // 1. Creamos el usuario en Supabase Authentication
+        const { error: authError } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            // Pasamos los datos extra aquí
+            data: { 
+              nombre: nombre, 
+              apellido: apellido 
+            },
+          },
+        });
+
+        if (authError) {
+          alert("Error al registrar: " + authError.message);
+          throw authError;
+        }
+
+        // 2. (HEMOS BORRADO EL BLOQUE .from("usuarios").insert())
+        // El Trigger de la base de datos se encargará de esto.
+
+        // 3. ¡Éxito!
+        alert("¡Registro exitoso! Revisá tu correo para verificar la cuenta.");
+        setIsRegister(false); 
+
+      } catch (error) {
+        console.error("Error en el registro:", error.message);
+      } finally {
+        setLoading(false);
+      }
+   
+
 
     } else {
       // --- LÓGICA DE LOGIN (Modificada) ---
@@ -119,7 +154,7 @@ export default function Login() {
                 type="text"
                 placeholder="Nombre"
                 value={nombre}
-                onChange={(e) => setNombre(e.gex.target.value)}
+                onChange={(e) => setNombre(e.target.value)}
                 required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
