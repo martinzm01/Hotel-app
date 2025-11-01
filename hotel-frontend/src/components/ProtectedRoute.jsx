@@ -4,22 +4,34 @@ import { useAuth } from '../context/AuthContext';
 export const ProtectedRoute = ({ allowedRoles }) => {
   const { session, profile, loading } = useAuth();
 
-  // Si aún está verificando la sesión, no mostramos nada para evitar parpadeos
-  if (loading) {
-    return null; // O un componente de Spinner/Cargando...
+  // Si aún está cargando, mostramos un loader (o nada si preferís)
+  if (loading || (session && !profile)) {
+    return (
+      <div className="flex h-screen justify-center items-center bg-gray-100">
+        <p className="text-gray-600 text-lg animate-pulse">Verificando acceso...</p>
+      </div>
+    );
   }
 
-  // 1. Si no hay sesión, lo mandamos al login
+  // Si no hay sesión, redirigimos al login
   if (!session) {
     return <Navigate to="/login" replace />;
   }
 
-  // 2. Si la ruta requiere roles específicos y el usuario no tiene el correcto
+  // Si hay sesión pero el rol no coincide con los permitidos
   if (allowedRoles && !allowedRoles.includes(profile?.rol)) {
-    // Lo mandamos a una página segura a la que sí tenga acceso, como el home.
+    // Si es admin, lo mandamos a /admin
+    if (profile?.rol === "administrador") {
+        return <Navigate to="/admin" replace />;
+    }
+    if (profile?.rol === "operador") {
+        return <Navigate to="/MenuOperador" replace />;
+    }
+
+    // Si no es admin ni operador, lo mandamos a /home
     return <Navigate to="/home" replace />;
   }
 
-  // 3. Si todo está en orden, muestra la página solicitada
+  // Si todo está bien, renderizamos la ruta solicitada
   return <Outlet />;
 };
