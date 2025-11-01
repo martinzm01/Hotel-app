@@ -18,12 +18,12 @@ export default function RoomCard({
   const estadoNormalizado = estado.toLowerCase();
 
   return (
-    <article className="group overflow-hidden rounded-lg border border-gray-300/90 bg-card transition-all hover:shadow-lg bg-gray-50 text-black">
+    <article className="group overflow-hidden rounded-lg border hover:scale-101 duration-300 border-gray-300/90 bg-card transition-all hover:shadow-lg bg-gray-50 text-black">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image || "/placeholder.svg"}
           alt={name}
-          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-102"
         />
 
         {/* Precio */}
@@ -78,7 +78,7 @@ export default function RoomCard({
           {/* Ya no es un <Link>, sino un <Button> que llama a 'onReserveClick' */}
           <Button
             onClick={() => onReserveClick(roomData)}
-            className="flex-1 cursor-pointer"
+            className="flex-1 cursor-pointer hover:bg-green-900/80"
             disabled={estadoNormalizado !== "disponible"}
           >
             {estadoNormalizado === "disponible"

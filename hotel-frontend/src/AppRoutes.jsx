@@ -22,50 +22,54 @@ import CompraProveedores from "./pages/compras";
 import PanelOperador from "./pages/MenuOperador";
 
 function AppRoutes() {
-  const { session } = useAuth();
+    const { session, profile, loading } = useAuth();
 
-  return (
-    <Routes>
-      {/* --- Rutas Públicas (Visibles para todos) --- */}
-      <Route path="/home" element={<Home />} />
-      <Route path="/login" element={!session ? <Login /> : <Navigate to="/home" />} />
+    if (loading) {   ///evita que se rendericen las rutas hasta que se confirme la sesión
+        return (
+        <div className="flex h-screen justify-center items-center">
+            <p className="text-gray-500 text-lg">Cargando sesión...</p>
+        </div>
+        );
+        }
+    return (
+        <Routes>
+        {/* --- Rutas Públicas --- */}
+        <Route path="/home" element={<Home />} />
+        <Route
+            path="/login"
+            element={!session ? <Login /> : <Navigate to="/home" replace />}
+        />
 
-      {/* --- Rutas Protegidas para Clientes --- */}
-      {/* Solo usuarios con rol 'cliente' pueden acceder */}
-      <Route element={<ProtectedRoute allowedRoles={['cliente']} />}>
-        <Route path="/habitaciones" element={<Habitaciones />} />
-        <Route path="/historialReservas" element={<HistorialReservas />} />
-        <Route path="/consultas" element={<Consultas />} />
-      </Route>
+        {/* --- Cliente --- */}
+        <Route element={<ProtectedRoute allowedRoles={['cliente']} userRole={profile?.rol} />}>
+            <Route path="/habitaciones" element={<Habitaciones />} />
+            <Route path="/historialReservas" element={<HistorialReservas />} />
+            <Route path="/consultas" element={<Consultas />} />
+        </Route>
 
-      {/* --- Rutas Protegidas para Administradores --- */}
-      {/* Solo usuarios con rol 'administrador' pueden acceder */}
-      <Route element={<ProtectedRoute allowedRoles={['administrador']} />}>
-        <Route path="/Admin" element={<Administracion />}>
-          {/* Rutas anidadas que se muestran dentro de Administracion.jsx */}
-          <Route index element={<Navigate to="habitaciones" replace />} />
-          <Route path="habitaciones" element={<AdminHabitaciones />} />
-          <Route path="operadores" element={<AdminOperadores />} />
-        </Route>
-      </Route>
-      
-      {/* --- Rutas Protegidas para Operadores --- */}
-      {/* Solo usuarios con rol 'operador' pueden acceder */}
-      <Route element={<ProtectedRoute allowedRoles={['operador']} />}>
-        <Route path="Reservas" element={<Reservas />} />
-        <Route path="AdminConsultas" element={<AdminConsultas />} />
-        <Route path="mapa" element={<Mapa />} />
-        <Route path="/compras" element={<CompraProveedores />} />
-        <Route path="/MenuOperador" element={<PanelOperador />} />
+        {/* --- Administrador --- */}
+        <Route element={<ProtectedRoute allowedRoles={['administrador']} userRole={profile?.rol} />}>
+            <Route path="/admin" element={<Administracion />}>
+            <Route index element={<Navigate to="habitaciones" replace />} />
+            <Route path="habitaciones" element={<AdminHabitaciones />} />
+            <Route path="operadores" element={<AdminOperadores />} />
+            </Route>
+        </Route>
 
-      </Route>
+        {/* --- Operador --- */}
+        <Route element={<ProtectedRoute allowedRoles={['operador']} userRole={profile?.rol} />}>
+            <Route path="/reservas" element={<Reservas />} />
+            <Route path="/adminconsultas" element={<AdminConsultas />} />
+            <Route path="/mapa" element={<Mapa />} />
+            <Route path="/compras" element={<CompraProveedores />} />
+            <Route path="/menuoperador" element={<PanelOperador />} />
+        </Route>
 
-      {/* --- Redirección principal y página no encontrada --- */}
-      <Route path="/" element={<Navigate to="/home" />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+        {/* --- Redirección principal --- */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<NotFound />} />
+        </Routes>
+);
 }
-
 // ¡ESTA ES LA LÍNEA CORREGIDA!
 export default AppRoutes;

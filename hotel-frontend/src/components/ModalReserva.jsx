@@ -152,7 +152,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
   return (
     // 1. Fondo (Overlay)
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm "
       onClick={onClose}
     >
       {/* 2. Contenido del Modal */}
@@ -175,7 +175,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
         </h2>
 
         {/* Label de la Habitación */}
-        <div className="mt-4 mb-6 p-3 border-white rounded-lg bg-white ">
+        <div className="mt-4 mb-6 p-3 border-black border-1  rounded-lg bg-white/70 ">
           <p className=" text-black  font-medium">
             Estás reservando: Habitación {room.numero}
           </p>
@@ -190,7 +190,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
             
             {/* --- Campos Autocompletados --- */}
             <div>
-              <label htmlFor="nombre" className="block text-sm font-medium text-black">
+              <label htmlFor="nombre" className="block text-sm font-medium text-black ">
                 Nombre Completo
               </label>
               <input
@@ -198,7 +198,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 id="nombre"
                 value={nombre}
                 readOnly
-                className="mt-1 w-full rounded-md  bg-white shadow-sm hover:border-black border-gray-100 border-1 pl-3 p-1"
+                className="mt-1 w-full rounded-md  bg-white/80 shadow-sm border-gray-100 hover:border-black border-1 pl-3 p-1"
               />
             </div>
 
@@ -211,7 +211,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 id="email"
                 value={email}
                 readOnly
-                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 bg-white shadow-sm  p-1 pl-2 "
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 bg-white/80 shadow-sm  p-1 pl-2 "
               />
             </div>
             
@@ -225,7 +225,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)} // Permitimos editar el teléfono si quiere
                 required
-                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500  bg-white p-1 pl-2 hover:bg-gray-100  text-black"
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500  bg-white/80 p-1 pl-2 hover:bg-gray-100  text-black"
               />
             </div>
 
@@ -241,7 +241,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 onChange={(e) => setFechaLlegada(e.target.value)}
                 min={new Date().toISOString().split("T")[0]}
                 required
-                className="mt-1 w-full  rounded-md hover:border-black border-gray-100 border-1 shadow-sm bg-white focus:border-blue-500 hover:bg-gray-100 focus:ring-blue-500 p-1 pl-2 "
+                className="mt-1 w-full  rounded-md hover:border-black border-gray-100 border-1 shadow-sm bg-white/80 focus:border-blue-500 hover:bg-gray-100 focus:ring-blue-500 p-1 pl-2 "
               />
             </div>
 
@@ -256,7 +256,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 onChange={(e) => setFechaSalida(e.target.value)}
                 min={fechaLlegada || new Date().toISOString().split("T")[0]}
                 required
-                className="mt-1 w-full p-1 pl-2 rounded-md hover:border-black border-gray-100 border-1 shadow-sm hover:bg-gray-100 focus:border-blue-500 focus:ring-blue-500 text-black bg-white"
+                className="mt-1 w-full p-1 pl-2 rounded-md hover:border-black border-gray-100 border-1 shadow-sm hover:bg-gray-100 focus:border-blue-500 focus:ring-blue-500 text-black bg-white/80"
               />
             </div>
 
@@ -270,7 +270,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 required
-                className="mt-1 w-full rounded-md  shadow-sm p-1 pl-2 cursor-pointer hover:border-black border-gray-100 border-1 focus:border-blue-500 focus:ring-blue-500 bg-white text-black"
+                className="mt-1 w-full rounded-md  shadow-sm p-1 pl-2 cursor-pointer hover:border-black border-gray-100 border-1 focus:border-blue-500 focus:ring-blue-500 bg-white/80 text-black"
               >
                 <option value="Visa">Tarjeta de crédito Visa</option>
                 <option value="Mastercard">Tarjeta de crédito Mastercard</option>
@@ -289,7 +289,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 rows="3"
                 value={comentarios}
                 onChange={(e) => setComentarios(e.target.value)}
-                className="mt-1 w-full rounded-md p-1 pl-2  shadow-sm focus:border-blue-500 focus:ring-blue-500 hover:border-black border-gray-100 border-1 text-black bg-white/50"
+                className="mt-1 w-full rounded-md p-1 pl-2  shadow-sm focus:border-blue-500 focus:ring-blue-500 hover:border-black border-black border-1 text-black bg-white/70"
                 placeholder="¿Necesitas algo especial? (ej: cuna para bebé...)"
               ></textarea>
             </div>

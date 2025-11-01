@@ -18,7 +18,7 @@ export default function HotelNavbar() {
   const mobileLinkClasses =
     "block py-3 font-sans text-base font-light text-gray-700 dark:text-white/90 transition-colors hover:text-black dark:hover:text-white";
   const authButtonClasses =
-    "border border-gray-700/30 text-gray-700 dark:border-white/30 dark:text-white font-light px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-black transition";
+    "border border-gray-700/30 text-gray-700 cursor-pointer dark:border-white/30 dark:text-white font-light px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white hover:text-white dark:hover:text-black transition";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -60,9 +60,10 @@ export default function HotelNavbar() {
     return links;
   };
 
-  // 👇 Filtramos “Home” si estás en el panel admin
+  // Filtramos “Home” si estás en el panel admin
   const navLinks = getNavLinks().filter(link => {
-    if (isInAdmin && link.label === "Home") return false;
+    // Ocultar "Home" si es operador o si estás en el panel admin
+    if ((profile?.rol === "operador" || isInAdmin) && link.label === "Home") return false;
     return true;
   });
 
@@ -166,7 +167,7 @@ export default function HotelNavbar() {
                     handleLogout();
                     closeMenu();
                   }}
-                  className={`${authButtonClasses} block w-full`}
+                  className={`${authButtonClasses} block w-full `}
                 >
                   Cerrar Sesión
                 </button>
