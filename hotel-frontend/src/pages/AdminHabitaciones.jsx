@@ -13,6 +13,8 @@ export default function AdministracionPage() {
     price: 0,
     image: "",
     amenities: [], 
+    estado: "disponible", // Nuevo estado para el estado
+
   });
   const [newAmenity, setNewAmenity] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,9 +119,23 @@ async function uploadImage(file) {
     }));
   }
 };
-  const handleAddAmenity = () => { /* ...sin cambios... */ };
-  const handleRemoveAmenity = (index) => { /* ...sin cambios... */ };
-  // --- Fin de sección sin cambios ---
+
+  const handleAddAmenity = () => {
+    if (newAmenity.trim() !== "") {
+      setFormData(prev => ({
+        ...prev,
+        amenities: [...prev.amenities, newAmenity.trim()]
+      }));
+      setNewAmenity("");
+    }
+  };
+
+  const handleRemoveAmenity = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      amenities: prev.amenities.filter((_, i) => i !== index)
+    }));
+  };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -131,12 +147,13 @@ const handleSubmit = async (e) => {
     
     // CAMBIO CORREGIDO:
     numero: parseInt(formData.name, 10), // Estado 'name' (React) -> Columna 'numero' (BDD)
-    
     tipo: formData.type,
     descripcion: formData.description,
     precio: formData.price,
     servicios: formData.amenities || [],
-    imagen_url: formData.image, // Esto contendrá el File o la URL antigua
+    imagen_url: formData.image,
+    estado: formData.estado, // Guardar el estado en la base de datos
+ // Esto contendrá el File o la URL antigua
   };
 
   try {
@@ -345,7 +362,7 @@ const filteredRooms = rooms
 
       {/* --- MODAL (SIN CAMBIOS) --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 ">
           <div className="bg-white rounded-lg max-w-lg w-full p-6 relative text-black">
             
             <h3 className="text-xl font-serif font-light mb-4">
@@ -409,11 +426,33 @@ const filteredRooms = rooms
               />
 
               {/* Amenidades (sin cambios) */}
+
+
+{/* Selector de estado */}
+              <div>
+                <label htmlFor="estado" className=" flex  text-sm font-medium text-gray-700">
+                  Estado:
+                </label>
+                <select
+                  id="estado"
+                  name="estado"
+                  className="w-full border rounded px-3 py-2 cursor-pointer"
+                  value={formData.estado}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                >
+                  <option value="disponible">Disponible</option>
+                  <option value="mantenimiento">Mantenimiento</option>
+                  <option value="ocupada">Ocupada</option>
+                </select>
+              </div>
+
+              {/* Amenidades */}
               <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="Nueva amenidad"
-                  className="flex-1 border rounded-lg px-3 py-2 bg-white" 
+                  className="flex-1 border rounded px-3 py-2 "
                   value={newAmenity}
                   onChange={(e) => setNewAmenity(e.target.value)}
                   onKeyDown={(e) => {
@@ -422,9 +461,9 @@ const filteredRooms = rooms
                       handleAddAmenity();
                     }
                   }}
-                  disabled={isSubmitting} 
+                  disabled={isSubmitting}
                 />
-                <Button className="cursor-pointer" type="button" variant="outline" onClick={handleAddAmenity} disabled={isSubmitting}>
+                <Button type="button" className="cursor-pointer " variant="outline" onClick={handleAddAmenity} disabled={isSubmitting}>
                   Agregar
                 </Button>
               </div>
@@ -432,14 +471,13 @@ const filteredRooms = rooms
                 {formData.amenities.map((a, i) => (
                   <span key={i} className="bg-gray-200 rounded-full px-3 py-1 text-sm flex items-center gap-1">
                     {a}
-                    <button type="button" onClick={() => handleRemoveAmenity(i)} disabled={isSubmitting}>
+                    <button type="button" className="cursor-pointer" onClick={() => handleRemoveAmenity(i)} disabled={isSubmitting}>
                       ×
                     </button>
                   </span>
                 ))}
               </div>
-
-              {/* Botones (sin cambios) */}
+              {/* Botones  */}
               <div className="flex gap-2 mt-4">
                 <Button type="submit" className="flex-1 cursor-pointer hover:bg-green-950/70 hover:border-1" disabled={isSubmitting}>
                   {isSubmitting ? "Guardando..." : (editingRoom ? "Guardar Cambios" : "Crear Habitación")}
