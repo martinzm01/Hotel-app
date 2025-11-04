@@ -1,52 +1,67 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../back_supabase/client";
-import Header from "../components/headerHabitaciones";
 import Button from "../components/ui/Button";
+import UserCardAdmin from "../components/UserCardAdmin";
 
-export default function AdministracionOperadores() {
-  const [operators, setOperators] = useState([]);
-  const [editingOperator, setEditingOperator] = useState(null);
+export default function AdminOperadores() {
+  const [users, setUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
-    rol: "operador", // Valor por defecto
     nombre: "",
     apellido: "",
+    rol: "operador", // Valor por defecto
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientes, setClientes] = useState([]); // Nuevo estado para clientes
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedClientId, setExpandedClientId] = useState(null);
 
   useEffect(() => {
-    fetchOperators();
+    fetchUsers();
+    fetchClientes(); // Cargar clientes al montar el componente
   }, []);
 
-  async function fetchOperators() {
+  async function fetchUsers() {
     try {
       setLoading(true);
       setError(null);
 
       const { data, error } = await supabase
-        .from("clientes") // Usamos la tabla 'clientes'
+        .from("usuarios")
         .select("*")
-        .eq("rol", "operador") // Filtramos solo los operadores
-        .order("fecha_registro", { ascending: false });
+        .eq("rol", "operador");
 
       if (error) throw error;
 
-      if (data) {
-        const operatorsData = data.map((cliente) => ({
-          id: cliente.id,
-          email: cliente.email,
-          rol: cliente.rol,
-          nombre: cliente.nombre,
-          apellido: cliente.apellido,
-          fecha_registro: cliente.fecha_registro,
-        }));
-        setOperators(operatorsData);
-      }
+      setUsers(data);
     } catch (error) {
-      console.error("Error fetching operators:", error.message);
+      console.error("Error fetching users:", error.message);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Nueva función para obtener la lista de clientes
+  async function fetchClientes() {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("*")
+        .eq("rol", "cliente"); // Filtrar por rol "cliente"
+
+      if (error) throw error;
+
+      setClientes(data); // Guardar los clientes en el nuevo estado
+    } catch (error) {
+      console.error("Error fetching clientes:", error.message);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -65,109 +80,146 @@ export default function AdministracionOperadores() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const operatorDataForSupabase = {
-      email: formData.email,
-      rol: formData.rol,
-      nombre: formData.nombre,
-      apellido: formData.apellido,
-    };
-
     try {
-      if (editingOperator) {
-        // --- ACTUALIZAR (UPDATE) ---
+      if (editingUser) {
+        // Actualizar usuario
         const { data, error } = await supabase
-          .from("clientes") // Usamos la tabla 'clientes'
-          .update(operatorDataForSupabase)
-          .eq("id", editingOperator.id)
+          .from("usuarios")
+          .update({
+            email: formData.email,
+            nombre: formData.nombre,
+            apellido: formData.apellido,
+            rol: formData.rol,
+          })
+          .eq("id", editingUser.id)
           .select()
           .single();
 
         if (error) throw error;
 
-        const updatedOperator = {
-          id: data.id,
-          email: data.email,
-          rol: data.rol,
-          nombre: data.nombre,
-          apellido: data.apellido,
-          fecha_registro: data.fecha_registro,
-        };
-
-        setOperators((prev) =>
-          prev.map((operator) =>
-            operator.id === editingOperator.id ? updatedOperator : operator
-          )
+        setUsers((prev) =>
+          prev.map((user) => (user.id === editingUser.id ? data : user))
         );
       } else {
-        // --- CREAR (INSERT) ---
+        // Crear usuario
         const { data, error } = await supabase
-          .from("clientes") // Usamos la tabla 'clientes'
-          .insert({ ...operatorDataForSupabase, fecha_registro: new Date() }) // Insertamos con fecha de registro
+          .from("usuarios")
+          .insert({
+            email: formData.email,
+            nombre: formData.nombre,
+            apellido: formData.apellido,
+            rol: formData.rol,
+          })
           .select()
           .single();
 
         if (error) throw error;
 
-        const newOperator = {
-          id: data.id,
-          email: data.email,
-          rol: data.rol,
-          nombre: data.nombre,
-          apellido: data.apellido,
-          fecha_registro: data.fecha_registro,
-        };
-
-        setOperators((prev) => [newOperator, ...prev]);
+        setUsers((prev) => [data, ...prev]);
       }
 
       handleCloseModal();
     } catch (error) {
-      console.error("Error submitting operator:", error.message);
+      console.error("Error submitting user:", error.message);
       alert(`Error al guardar: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleEdit = (operator) => {
-    setEditingOperator(operator);
+  const handleEdit = (user) => {
+    setEditingUser(user);
     setFormData({
-      email: operator.email,
-      rol: operator.rol,
-      nombre: operator.nombre,
-      apellido: operator.apellido,
+      email: user.email,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      rol: user.rol,
     });
     setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este operador?")) {
+    if (confirm("¿Estás seguro de que deseas volver este usuario a cliente?")) {
       try {
-        const { error } = await supabase
-          .from("clientes") // Usamos la tabla 'clientes'
-          .delete()
-          .eq("id", id);
+        const { data, error } = await supabase
+          .from("usuarios")
+          .update({ rol: "cliente" }) // Cambiar el rol a "cliente"
+          .eq("id", id)
+          .select()
+          .single();
 
         if (error) throw error;
 
-        setOperators((prev) => prev.filter((operator) => operator.id !== id));
+        // Actualizar la lista de usuarios
+        setUsers((prev) => prev.filter((user) => user.id !== id));
+
+        // Agregar el usuario a la lista de clientes (si es necesario)
+        setClientes((prev) => [data, ...prev]);
+
       } catch (error) {
-        console.error("Error deleting operator:", error.message);
-        alert(`Error al borrar: ${error.message}`);
+        console.error("Error al cambiar el rol del usuario:", error.message);
+        alert(`Error al cambiar el rol del usuario: ${error.message}`);
       }
     }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setEditingOperator(null);
-    setFormData({ email: "", rol: "operador", nombre: "", apellido: "" });
+    setEditingUser(null);
+    setFormData({
+      email: "",
+      nombre: "",
+      apellido: "",
+      rol: "operador",
+    });
   };
+
+  // Función para ascender un cliente existente a operador
+  const handleAscend = async (user) => {
+    if (confirm(`¿Estás seguro de que deseas ascender a ${user.nombre} ${user.apellido} a operador?`)) {
+      try {
+        const { data, error } = await supabase
+          .from("usuarios")
+          .update({ rol: "operador" })
+          .eq("id", user.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Actualizar la lista de usuarios y clientes
+        setUsers((prev) => {
+          const updatedUsers = [...prev, { ...user, rol: "operador" }];
+          return updatedUsers;
+        });
+        setClientes((prev) => prev.filter((c) => c.id !== user.id));
+      } catch (error) {
+        console.error("Error al ascender usuario:", error.message);
+        alert(`Error al ascender usuario: ${error.message}`);
+      }
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+  };
+
+  const handleToggleDetails = (id) => {
+    setExpandedClientId(expandedClientId === id ? null : id);
+  };
+
+  // Filtra los clientes basados en el término de búsqueda
+  const filteredClientes = clientes.filter(user =>
+    searchTerm === "" ||
+    user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
       <main>
-        <Header />
         <section className="py-20 text-center">
           <p>Cargando operadores...</p>
         </section>
@@ -178,7 +230,6 @@ export default function AdministracionOperadores() {
   if (error) {
     return (
       <main>
-        <Header />
         <section className="py-20 text-center">
           <p className="text-red-600">Error al cargar: {error}</p>
         </section>
@@ -188,42 +239,90 @@ export default function AdministracionOperadores() {
 
   return (
     <main>
-      <Header />
-      <section className="py-20">
+      <section>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-8 flex items-center justify-between mt-10">
             <div>
               <h2 className="font-serif text-4xl font-light text-foreground">
                 Administración de Operadores
               </h2>
-              <p className="mt-2 text-muted-foreground">Gestiona los operadores del hotel</p>
+              <p className="mt-2 text-muted-foreground">
+                Gestiona los operadores del hotel
+              </p>
             </div>
-            <Button size="lg" onClick={() => setIsModalOpen(true)}>
-              + Nuevo Operador
-            </Button>
           </div>
 
+          {/* Lista de operadores */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {operators.map((operator) => (
-              <div key={operator.id} className="bg-white rounded-lg shadow-md p-4">
-                <h3 className="text-xl font-semibold mb-2">{operator.nombre} {operator.apellido}</h3>
-                <p className="text-gray-600">Email: {operator.email}</p>
-                <p className="text-gray-600">Rol: {operator.rol}</p>
-                <div className="mt-4 flex justify-end gap-2">
-                  <Button size="sm" onClick={() => handleEdit(operator)}>
-                    Editar
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(operator.id)}>
-                    Eliminar
-                  </Button>
-                </div>
-              </div>
+            {users.map((user) => (
+              <UserCardAdmin
+                key={user.id}
+                {...user}
+                onEdit={() => handleEdit(user)}
+                onDelete={() => handleDelete(user.id)}
+              />
             ))}
           </div>
 
-          {operators.length === 0 && (
+          {/* Barra de búsqueda */}
+          <div className="mt-4">
+            <input
+              type="text"
+              placeholder="Buscar cliente por nombre o correo..."
+              className="w-full border rounded px-3 py-2"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+
+          {/* Sección para ascender clientes existentes */}
+          <section>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <h2 className="font-serif text-2xl font-light text-foreground mt-10">
+                Ascender Clientes a Operadores
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                Lista de clientes para ascender a operadores
+              </p>
+
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* Mapear sobre los clientes filtrados */}
+                {filteredClientes.map((user) => (
+                  <div key={user.id} className="bg-white shadow rounded-lg p-4">
+                    <h3 className="text-lg font-semibold" style={{ color: 'black' }}>{user.nombre} {user.apellido}</h3> {/* Nombre en negro */}
+                    <p className="text-gray-600">{user.email}</p>
+                    <div className="mt-2 flex justify-between">
+                      <Button size="sm" onClick={() => handleAscend(user)}>
+                        Ascender
+                      </Button>
+                      <Button size="sm" onClick={() => handleToggleDetails(user.id)}>
+                        {expandedClientId === user.id ? "Ocultar Detalles" : "Ver Detalles"}
+                      </Button>
+                    </div>
+                    {expandedClientId === user.id && (
+                      <div className="mt-2" style={{ color: 'black' }}> {/* Detalles en negro */}
+                        <p>Email: {user.email}</p>
+                        {/* Agrega más detalles aquí (fecha_registro, dni, telefono, etc.) */}
+                        <p>Fecha de Registro: {user.fecha_registro}</p>
+                        <p>DNI: {user.dni}</p>
+                        <p>Teléfono: {user.telefono}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {filteredClientes.length === 0 && (
+                <p className="text-center text-gray-500 mt-12">
+                  No hay clientes para ascender a operadores que coincidan con la búsqueda.
+                </p>
+              )}
+            </div>
+          </section>
+
+          {users.length === 0 && !searchTerm && (
             <p className="text-center text-gray-500 mt-12">
-              No hay operadores cargados. ¡Añade uno!
+              No hay operadores cargados. ¡Empieza a buscar o ascender clientes!
             </p>
           )}
         </div>
@@ -233,7 +332,7 @@ export default function AdministracionOperadores() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-lg max-w-lg w-full p-6 relative text-black">
             <h3 className="text-xl font-serif font-light mb-4">
-              {editingOperator ? "Editar Operador" : "Nuevo Operador"}
+              {editingUser ? "Editar Operador" : "Nuevo Operador"}
             </h3>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -270,9 +369,19 @@ export default function AdministracionOperadores() {
 
               <div className="flex gap-2 mt-4">
                 <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                  {isSubmitting ? "Guardando..." : editingOperator ? "Guardar Cambios" : "Crear Operador"}
+                  {isSubmitting
+                    ? "Guardando..."
+                    : editingUser
+                    ? "Guardar Cambios"
+                    : "Crear Operador"}
                 </Button>
-                <Button type="button" variant="outline" className="flex-1" onClick={handleCloseModal} disabled={isSubmitting}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleCloseModal}
+                  disabled={isSubmitting}
+                >
                   Cancelar
                 </Button>
               </div>

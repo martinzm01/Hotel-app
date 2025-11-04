@@ -3,13 +3,14 @@ import { supabase } from "../back_supabase/client";
 import ModalPlaceholder from "./ModalPlaceholder";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { LayoutGrid, CalendarCheck, MessageSquare } from "lucide-react";
 
 export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [metodoPagoBD, setMetodoPagoBD] = useState(null); // Estado para el método de pago real
 
-  // 🔹 useEffect: Busca el método de pago si está "Pendiente de confirmación" o "Pagado"
+  // useEffect: Busca el método de pago si está "Pendiente de confirmación" o "Pagado"
   //    para poder mostrarlo.
   useEffect(() => {
     const fetchMetodoPago = async () => {
@@ -41,7 +42,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
     fetchMetodoPago();
   }, [reserva.id, reserva.estado_pago]);
 
-  // 🔹 handleUpdateStatus (Sin cambios)
+  // handleUpdateStatus (Sin cambios)
   const handleUpdateStatus = async (nuevoEstado) => {
     setIsLoading(true);
     setError("");
@@ -62,7 +63,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
     }
   };
 
-  // 🔹 NUEVA FUNCIÓN: Confirmar Pago
+  // NUEVA FUNCIÓN: Confirmar Pago
   //    Esta función solo actualiza el estado, ya no inserta pagos.
   const handleConfirmarPago = async () => {
     setIsLoading(true);
@@ -78,7 +79,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
         .from("reservas")
         .update({
           estado_pago: "Pagado",
-          estado_reserva: "Activa",
+          estado_reserva: "Confirmada",
         })
         .eq("id", reserva.id);
 
@@ -91,24 +92,24 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
     }
   };
 
-  // 🔹 Footer MODIFICADO:
+  // Footer MODIFICADO:
   //    - Solo muestra el botón de "Confirmar Pago" si el estado es "Pendiente de confirmación".
   const footerButtons = (
     <div className="flex w-full justify-between items-center">
       <button
         onClick={onClose}
-        className="button-secondary rounded-full p-2 px-4 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+        className="button-secondary rounded-lg p-2 px-4 bg-white hover:bg-red-300/70 hover:border-1 hover:border-gray-200 hover:text-white cursor-pointer"
         disabled={isLoading}
       >
         Cerrar
       </button>
 
-      {/* 🔹 Solo mostrar el botón si el estado es 'Pendiente de confirmacion' */}
+      {/*  Solo mostrar el botón si el estado es 'Pendiente de confirmacion' */}
       {reserva.estado_pago === "Pendiente de confirmación" &&
       reserva.estado_reserva !== "Cancelada" ? (
         <button
-          onClick={handleConfirmarPago} // 🔹 Usa la nueva función
-          className="button-success rounded-full p-2 px-4 bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
+          onClick={handleConfirmarPago} //  Usa la nueva función
+          className="button-success cursor-pointer rounded-full p-2 px-4 bg-green-900 text-white hover:bg-green-700/70 transition disabled:opacity-50"
           disabled={isLoading}
         >
           {isLoading ? "Confirmando..." : "Confirmar Pago"}
@@ -119,14 +120,14 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
 
   return (
     <ModalPlaceholder
-      title={`Detalle Reserva #${reserva.id}`}
+      title={` Detalle Reserva #${reserva.id}`}
       onClose={onClose}
       footer={footerButtons}
     >
       <div className="space-y-4 text-gray-800">
         {/* Información General (Sin cambios) */}
-        <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
-          <h4 className="text-lg font-semibold text-gray-800 mb-3">
+        <div className="bg-white rounded-lg p-4 shadow border  border-gray-200">
+          <h4 className="text-xl font-semibold text-gray-800 mb-3">
             Información General
           </h4>
           <ul className="space-y-1 text-sm">
@@ -157,7 +158,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
         </div>
 
         {/* Estado (Sin cambios) */}
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-200">
+        <div className="bg-white rounded-lg p-4 shadow border border-gray-100">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Estado Actual
           </h4>
@@ -174,16 +175,16 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
             >
               Pago: {reserva.estado_pago || "Pendiente"}
             </span>
-            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-800 font-medium">
+            <span className="px-3 py-1 rounded-full bg-gray-200 text-gray-800 font-medium">
               Total: ${reserva.precio_total}
             </span>
           </div>
         </div>
 
-        {/* 🔹 Método de pago MODIFICADO:
-             Se eliminó el <select> y el caso para "Pendiente".
+        {/*  Método de pago MODIFICADO:
+          Se eliminó el <select> y el caso para "Pendiente".
         */}
-        <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
+        <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Método de pago
           </h4>
@@ -212,24 +213,16 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
         </div>
 
         {/* Acciones (Sin cambios) */}
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-200">
+        <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">
             Acciones de Estado
           </h4>
           <div className="flex flex-col gap-2">
-            {reserva.estado_reserva === "Confirmada" && (
-              <button
-                onClick={() => handleUpdateStatus("Activa")}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
-                disabled={isLoading}
-              >
-                {isLoading ? "..." : "Realizar Check-in"}
-              </button>
-            )}
+
             {reserva.estado_reserva === "Activa" && (
               <button
                 onClick={() => handleUpdateStatus("Finalizada")}
-                className="bg-green-900 hover:bg-green-700 text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
+                className="bg-green-900 hover:bg-green-700/70 cursor-pointer text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Realizar Check-out"}
@@ -240,7 +233,7 @@ export default function ModalDetalleReserva({ reserva, onClose, onUpdate }) {
             ) && (
               <button
                 onClick={() => handleUpdateStatus("Cancelada")}
-                className="bg-red-600 hover:bg-red-800 text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
+                className="bg-red-600 hover:bg-red-400/70 cursor-pointer text-white font-medium py-2 rounded-lg shadow transition disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Cancelar Reserva"}

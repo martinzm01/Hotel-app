@@ -15,7 +15,7 @@ import {
 // Configuración de estado (sin cambios)
 const statusConfig = {
   Activa: {
-    bg: 'bg-blue-950/80',
+    bg: 'bg-green-400/90',
     text: 'text-white',
     icon: <FaCheckCircle className="inline mr-1 mb-0.5" />,
   },
@@ -30,10 +30,15 @@ const statusConfig = {
     icon: <FaTimesCircle className="inline mr-1 mb-0.5" />,
   },
   Finalizada: { 
-      bg: 'bg-blue-500/80',
+      bg: 'bg-gray-500/80',
       text: 'text-white',
       icon: <FaCheckCircle className="inline mr-1 mb-0.5" />,
     },
+  Confirmada:{
+    bg: 'bg-blue-950/80',
+    text: 'text-white',
+    icon: <FaCheckCircle className="inline mr-1 mb-0.5" />,
+  },
   'default': { 
     bg: 'bg-gray-400/80',
     text: 'text-white',
@@ -65,7 +70,12 @@ const ReservaCard = ({ reserva,onUpdate }) => {
     habitaciones
   } = reserva;
 
-  const habitacionNombre = habitaciones?.tipo || 'Habitación';
+
+  const habitacionTipo = habitaciones?.tipo || 'Habitación';
+  const habitacionNumero = habitaciones?.numero;
+  const habitacionNombre = habitacionNumero 
+  ? `Hab. ${habitacionNumero} - ${habitacionTipo}` 
+  : habitacionTipo;
   const habitacionImagen = habitaciones?.imagen_url || '/placeholder.svg';
   const checkIn = formatSimpleDate(fecha_inicio);
   const checkOut = formatSimpleDate(fecha_fin);
@@ -147,7 +157,7 @@ return (
             
             {/* ¡CAMBIO CLAVE AQUÍ! */}
             <button 
-              className="flex-1 bg-green-950 text-white font-bold py-2 px-4 rounded-lg transition duration-300 cursor-pointer hover:bg-green-900"
+              className="flex-1 bg-green-950 text-white font-bold py-2 px-4 rounded-lg transition duration-300 cursor-pointer hover:bg-green-950/70"
               onClick={() => setIsModalOpen(true)} // <-- ABRE EL MODAL
             >
               Ver Detalles

@@ -10,30 +10,32 @@ export default function RoomCardAdmin({
   price,
   image,
   amenities = [],
-  estado = "Disponible",
+  estado = "disponible",
   onEdit,
   onDelete,
 }) {
   //overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black
   //group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg
   return (
-    <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black">
+    <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card mt-1 mb-1 transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image || "/placeholder.svg"}
           alt={name}
-          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105 "
         />
-        <div className="absolute right-4 top-4 rounded-full bg-background/90 px-4 py-2 backdrop-blur-sm bg-white/50">
+        <div className="absolute right-4 top-4 rounded-full bg-background/90 px-4 py-2 backdrop-blur-sm bg-white/80">
           <span className="font-serif text-sm font-medium text-primary">${price}</span>
           <span className="text-xs text-muted-foreground">/ noche</span>
         </div>
         <div
           className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm ${
-            estado === "Disponible"
-              ? "bg-green-500/80 text-white"
-              : "bg-red-500/80 text-white"
-          }`}
+            estado === "disponible"
+            ? "bg-green-500/80 text-white"  // Verde
+            : estado === "mantenimiento"
+            ? "bg-gray-700/70 text-white"   // Gris
+            : "bg-red-500/80 text-white"     // Rojo para el resto (cancelada, ocupado)
+            }`}
         >
           {estado}
         </div>
@@ -61,12 +63,12 @@ export default function RoomCardAdmin({
 
         {/* Botones dentro de la tarjeta */}
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1" onClick={() => onEdit(id)}>
+          <Button variant="outline" size="sm" className="flex-1 cursor-pointer " onClick={() => onEdit(id)}>
             <Pencil className="mr-2 h-4 w-4" />
             Editar
           </Button>
-          <Button variant="destructive" size="sm" className="flex-1" onClick={() => onDelete(id)}>
-            <Trash2 className="mr-2 h-4 w-4" />
+          <Button variant="destructive" size="sm" className="flex-1 cursor-pointer" onClick={() => onDelete(id)}>
+            <Trash2 className="mr-2 h-4 w-4 " />
             Eliminar
           </Button>
         </div>
