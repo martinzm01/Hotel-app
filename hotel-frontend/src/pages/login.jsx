@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
+  const [dni, setDni] = useState(""); 
   const [apellido, setApellido] = useState("");
   const navigate = useNavigate();
   // <<< 1. OBTENEMOS 'setLoading' ADEMÁS DE 'setProfile'
@@ -22,7 +23,7 @@ if (isRegister) {
       try {
         setLoading(true);
 
-        if (!email || !password || !nombre || !apellido) {
+        if (!email || !password || !nombre || !apellido || !dni) {
           alert("Por favor, completá todos los campos.");
           throw new Error("Campos incompletos");
         }
@@ -35,7 +36,8 @@ if (isRegister) {
             // Pasamos los datos extra aquí
             data: { 
               nombre: nombre, 
-              apellido: apellido 
+              apellido: apellido,
+              dni: dni, 
             },
           },
         });
@@ -166,6 +168,14 @@ if (isRegister) {
                 required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
+              <input
+                type="text" // Puedes usar "text" o "number"
+                placeholder="DNI"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
             </>
           )}
 
@@ -189,7 +199,7 @@ if (isRegister) {
 
           <button
             type="submit"
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-gray-800 hover:bg-gray-600 cursor-pointer text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             {isRegister ? "Registrarse" : "Ingresar"}
           </button>
@@ -198,7 +208,7 @@ if (isRegister) {
         <p className="mt-4 text-center">
           {isRegister ? "¿Ya tenés una cuenta?" : "¿No tenés cuenta?"}{" "}
           <button
-            className="text-blue-600 hover:text-blue-800 font-bold underline cursor-pointer"
+            className="text-blue-600 hover:text-blue-800  font-bold underline cursor-pointer"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister ? "Iniciar sesión" : "Registrarme"}
