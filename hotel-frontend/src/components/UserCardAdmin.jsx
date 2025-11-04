@@ -12,7 +12,7 @@ export default function UserCardAdmin({
   onDelete,
 }) {
   return (
-    <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black">
+    <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-103 hover:shadow-lg bg-gray-50 text-black">
       <div className="p-6">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="font-serif text-2xl font-light text-foreground">
@@ -23,30 +23,22 @@ export default function UserCardAdmin({
           </span>
         </div>
 
-        <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground flex">
           {email}
         </p>
 
         {/* Botones dentro de la tarjeta */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 bg-gray-100 border-1 border-gray-200 rounded">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1"
+            className="flex-1 cursor-pointer hover:border-1 hover:gray-400"
             onClick={() => onEdit(id)}
           >
             <Pencil className="mr-2 h-4 w-4" />
             Editar
           </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            className="flex-1"
-            onClick={() => onDelete(id)}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Eliminar
-          </Button>
+
         </div>
       </div>
     </article>
