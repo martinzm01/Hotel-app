@@ -50,7 +50,7 @@ export default function ModalDetalleReservaCliente({ reserva, onClose }) {
     const footerButtons = (
         <button
         onClick={onClose}
-        className="button-secondary rounded-full p-2 px-4 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+        className="button-secondary rounded-md p-2 px-4 text-white bg-red-700/70 hover:bg-red-700/50 hover:border-1 cursor-pointer"
         >
         Cerrar
         </button>
@@ -65,15 +65,21 @@ export default function ModalDetalleReservaCliente({ reserva, onClose }) {
         <div className="space-y-4 text-gray-800">
             
             {/* Información General */}
-            <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
+            <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">
                 Información General
             </h4>
             <ul className="space-y-1 text-sm">
-                <li>
-                <span className="font-medium">Habitación:</span>{" "}
-                {reserva.habitaciones?.tipo || `ID ${reserva.id_habitacion}`}
-                </li>
+                <li>
+                  <span className="font-medium">Habitación:</span>{" "}
+                  {/* 1. Mostramos el NÚMERO de habitación */}
+                  {reserva.habitaciones?.numero || `ID ${reserva.id_habitacion}`}
+                </li>
+                {/* 2. Agregamos el TIPO de habitación en una nueva línea */}
+                <li>
+                  <span className="font-medium">Tipo:</span>{" "}
+                  {reserva.habitaciones?.tipo || "No especificado"}
+                </li>
                 {/* 5. Usamos los datos del 'profile' del contexto */}
                 <li>
                 <span className="font-medium">Cliente:</span>{" "}
@@ -96,7 +102,7 @@ export default function ModalDetalleReservaCliente({ reserva, onClose }) {
             </div>
 
             {/* Estado */}
-            <div className="bg-white rounded-xl p-4 shadow border border-gray-200">
+            <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">
                 Estado Actual
             </h4>
@@ -120,7 +126,7 @@ export default function ModalDetalleReservaCliente({ reserva, onClose }) {
             </div>
 
             {/* Método de pago (Solo lectura) */}
-            <div className="bg-gray-50 rounded-xl p-4 shadow border border-gray-200">
+            <div className="bg-white rounded-lg p-4 shadow border border-gray-200">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">
                 Método de pago
             </h4>

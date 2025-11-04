@@ -10,6 +10,7 @@ import {
 import Badge from "./ui/badge/Badge";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { LayoutGrid, CalendarCheck, MessageSquare } from "lucide-react";
 
 // --- Helper para dar color a los Badges de Estado de Consulta ---
 const getStatusBadgeClass = (status) => {
@@ -30,7 +31,7 @@ const CloseIcon = () => (
     </svg>
 );
 
-// --- Componente del Modal (movido a este archivo) ---
+// --- Componente del Modal ---
 function ModalDetalleConsulta({ consulta, onClose, onUpdate }) {
     // Estado local para la respuesta del operador
     const [respuesta, setRespuesta] = useState(consulta.respuesta || '');
@@ -95,22 +96,22 @@ function ModalDetalleConsulta({ consulta, onClose, onUpdate }) {
     return (
         // Fondo oscuro semi-transparente
         <div 
-        className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50 p-4"
+        className=" z-50 flex items-center justify-center  fixed  inset-0 bg-black/50 bg-opacity-50 backdrop-blur-sm"
         onClick={onClose} // Cierra el modal si se hace clic fuera
         >
         {/* Contenedor del Modal */}
         <div 
-            className="relative w-full  max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
+            className="relative w-full  max-w-xl rounded-lg bg-white/90 p-6 shadow-xl "
             onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del modal lo cierre
         >
             {/* Encabezado del Modal */}
-            <div className="flex items-start justify-between border-b pb-3 dark:border-gray-600">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Gestionar Consulta #{consulta.id}
+            <div className="flex items-start justify-between  border-b-1 border-blue-900 pb-3 ">
+            <h2 className="text-xl font-semibold text-black flex">
+                <MessageSquare className="text-yellow-500 mr-3"/> Gestionar Consulta #{consulta.id}
             </h2>
             <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-black/70 cursor-pointer  dark:hover:text-red-700/70"
             >
                 <CloseIcon />
             </button>
@@ -119,31 +120,31 @@ function ModalDetalleConsulta({ consulta, onClose, onUpdate }) {
             {/* Cuerpo del Modal */}
             <div className="mt-4 pl-2 max-h-[70vh] overflow-y-auto pr-2">
             {/* Sección de Información del Cliente */}
-            <div className="mb-4 rounded-lg border bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-700">
-                <h3 className="mb-2 text-sm font-semibold uppercase text-gray-600 dark:text-gray-400">Cliente</h3>
+            <div className="mb-4 rounded-lg border border-gray-100 bg-white/90 p-3">
+                <h3 className="mb-2 text-sm font-semibold uppercase text-black ">Cliente</h3>
                 {consulta.cliente ? (
                     <>
-                        <p className="text-gray-800 dark:text-gray-200">
+                        <p className="text-gray-800 ">
                             <strong>Nombre:</strong> {consulta.cliente.nombre} {consulta.cliente.apellido}
                         </p>
-                        <p className="text-gray-800 dark:text-gray-200"><strong>DNI:</strong> {consulta.cliente.dni}</p>
+                        <p className="text-gray-800 "><strong>DNI:</strong> {consulta.cliente.dni}</p>
                     </>
                 ) : (
                     <p className="text-gray-800 dark:text-gray-200">
                         <strong>Email:</strong> {consulta.email} (Usuario no registrado)
                     </p>
                 )}
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-black ">
                     Enviada: {format(parseISO(consulta.fecha), "dd 'de' MMMM, yyyy 'a las' HH:mm", { locale: es })}
                 </p>
             </div>
 
             {/* Sección del Mensaje del Cliente */}
             <div className="mb-4">
-                <label className="mb-1 block text-sm font-semibold uppercase text-gray-600 dark:text-gray-400">
+                <label className="mb-1 block text-sm font-semibold uppercase text-blue-900">
                 Mensaje del Cliente
                 </label>
-                <div className="min-h-[100px] w-full rounded-lg border bg-white p-3 text-gray-800 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
+                <div className="min-h-[100px] w-full rounded-lg border   border-gray-100 bg-white/90 p-3 text-black ">
                 {/* Usamos 'whitespace-pre-wrap' para respetar saltos de línea */}
                 <p style={{ whiteSpace: 'pre-wrap' }}>{consulta.mensaje}</p>
                 </div>
@@ -151,13 +152,13 @@ function ModalDetalleConsulta({ consulta, onClose, onUpdate }) {
 
             {/* Sección de Respuesta del Operador */}
             <form onSubmit={handleSubmitRespuesta}>
-                <label htmlFor="respuestaOperador" className="mb-1 block text-sm font-semibold uppercase text-gray-600 dark:text-gray-400">
+                <label htmlFor="respuestaOperador" className="mb-1 block text-sm font-semibold uppercase text-red-700 ">
                 {consulta.respondida ? 'Respuesta Enviada' : 'Escribir Respuesta'}
                 </label>
                 <textarea
                 id="respuestaOperador"
                 rows={6}
-                className="w-full rounded-lg border p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700  dark:text-white "///////
+                className="w-full rounded-lg border  bg-white/80 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500  "///////
                 value={respuesta}
                 onChange={(e) => setRespuesta(e.target.value)}
                 placeholder="Escribe tu respuesta aquí..."
@@ -172,14 +173,14 @@ function ModalDetalleConsulta({ consulta, onClose, onUpdate }) {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-500 dark:text-gray-300 dark:hover:bg-gray-600"
+                    className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium bg-gray-200 cursor-pointer text-black shadow-sm hover:bg-gray-300  "
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
                     disabled={isSubmitting || !currentUserId}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm
+                    className={`rounded-lg px-4 py-2 cursor-pointer text-sm font-medium text-white shadow-sm
                     ${isSubmitting ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}
                     ${!currentUserId ? 'bg-gray-400 cursor-not-allowed' : ''}
                     `}
@@ -325,7 +326,7 @@ export default function TableAdminConsultas() {
                     </TableRow>
                     ) : (
                     filteredData.map((consulta) => (
-                        <TableRow key={consulta.id} className="hover:bg-gray-50 dark:hover:bg-gray-400 hover:text-white">
+                        <TableRow key={consulta.id} className="hover:bg-gray-50 dark:hover:bg-gray-400/80 hover:text-white">
                         
                         <TableCell className="px-5 py-4 text-start">
                             <Badge className={`${getStatusBadgeClass(consulta.respondida)} px-2 py-1 text-xs`}>
@@ -367,7 +368,7 @@ export default function TableAdminConsultas() {
 
                         <TableCell className="px-5 py-4 text-start">
                             <button
-                            className="rounded bg-blue-500 px-3 py-1 text-xs font-medium text-white shadow-sm hover:bg-blue-600"
+                            className="rounded bg-blue-500 px-3 py-1 text-xs font-medium cursor-pointer text-white shadow-sm hover:bg-blue-600"
                             onClick={() => handleGestionarClick(consulta)}
                             >
                             Gestionar

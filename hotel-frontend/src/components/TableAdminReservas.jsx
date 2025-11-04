@@ -128,7 +128,7 @@ export default function TableAdminReservas() {
 
       {/* Tabla */}
       {!isLoading && !error && (
-        <div className="w-full max-w-7xl overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-md dark:border-white/[0.05] ">
+        <div className="w-full max-w-7xl overflow-hidden rounded-xl border  border-gray-200 bg-white shadow-lg dark:border-gray-300/[0.05] ">
           <div className="max-w-full overflow-x-auto">
             <Table>
               <TableHeader className="border-b border-gray-100 bg-gray-50 dark:border-white/[0.05] dark:bg-gray-700">
@@ -155,7 +155,7 @@ export default function TableAdminReservas() {
                 ) : (
                   filteredData.map((reserva) => (
                     // Asegúrate que tu PK se llama 'id' y no 'id_reserva'
-                    <TableRow key={reserva.id} className="hover:bg-gray-50 dark:hover:bg-gray-400 hover:text-white">
+                    <TableRow key={reserva.id} className="hover:bg-gray-50 dark:hover:bg-gray-400/80 hover:text-white">
                       <TableCell className="px-5 py-4 text-start text-sm text-gray-900 dark:text-black">{reserva.id}</TableCell>
 
                       <TableCell className="px-5 py-4 text-start">

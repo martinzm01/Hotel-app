@@ -32,7 +32,7 @@ export default function Admin() {
             {/* Tarjeta 1 -Administración de Habitaciones */}
             <NavLink
               to="/admin/habitaciones"
-              className="group bg-gray-800/70 hover:bg-gray-700/70 rounded-2xl shadow-lg p-10 mr-2 pt-20 pb-20 mt-20  text-center flex flex-col items-center transition-transform transform hover:scale-105"
+              className="group bg-gray-900/80 hover:bg-gray-800/80 rounded-2xl shadow-lg p-10 mr-2 pt-20 pb-20 mt-20  text-center flex flex-col items-center transition-transform transform hover:scale-105"
             >
               <BedDouble className="w-16 h-16 mb-4 text-blue-400 group-hover:animate-pulse" />
               <h2 className="text-2xl font-medium mb-2 font-serif">
@@ -46,7 +46,7 @@ export default function Admin() {
             {/*Tarjeta 2 - Gestión de Operadores */}
             <NavLink
               to="/admin/operadores"
-              className="group bg-gray-800/70 hover:bg-gray-700/70 rounded-2xl shadow-lg p-10 pt-20 pb-20 mt-20 text-center flex flex-col items-center transition-transform transform hover:scale-105"
+              className="group bg-gray-900/80 hover:bg-gray-800/80 rounded-2xl shadow-lg p-10 pt-20 pb-20 mt-20 text-center flex flex-col items-center transition-transform transform hover:scale-105"
             >
               <UserCog className="w-16 h-16 mb-4 text-green-400 group-hover:animate-pulse" />
               <h2 className="text-2xl font-medium mb-2 font-serif">

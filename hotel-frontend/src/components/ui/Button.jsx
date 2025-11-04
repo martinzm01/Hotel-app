@@ -13,13 +13,13 @@ export default function Button({
 
   const variants = {
     default:
-      "bg-[#1D3B2D] text-white hover:bg-[#1D3B2D] focus-visible:bg-[#1D3B2D] focus-visible:ring-[#5C8A70]",
+      "bg-[#1D3B2D] text-white hover:bg-[#1D3B2D] focus-visible:bg-[#1D3B2D] focus-visible:ring-[#5C8A70] cursor-pointer hover:bg-green-950",
     outline:
-      "border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 focus-visible:ring-gray-300",
+      "border border-gray-200 bg-transparent text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300",
     ghost:
-      "bg-transparent text-gray-800 hover:bg-gray-100 focus-visible:ring-gray-200",
+      "bg-transparent text-gray-800 hover:bg-gray-200  focus-visible:ring-gray-200",
     destructive:
-      "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+      "bg-red-600 text-white hover:bg-red-700/60 focus-visible:ring-red-500 ",
   };
 
   const sizes = {
