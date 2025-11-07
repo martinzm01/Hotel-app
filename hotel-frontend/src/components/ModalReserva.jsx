@@ -4,13 +4,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 // --- FIN NUEVO ---
 import { useAuth } from "../context/AuthContext";
-import { X, Loader2 } from "lucide-react";
+// --- NUEVO: Import de icono de tarjeta ---
+import { X, Loader2, CreditCard } from "lucide-react"; 
+// --- FIN NUEVO ---
 import { supabase } from "../back_supabase/client";
 import Button from "./ui/Button";
 import { LayoutGrid, CalendarCheck, MessageSquare } from "lucide-react";
 
-// --- NUEVO: Funciones Helper para fechas ---
-// Para evitar problemas de zona horaria (timezone)
+// --- NUEVO: Funciones Helper para fechas (Sin cambios) ---
 const formatDateToString = (date) => {
   if (!date) return "";
   const y = date.getFullYear();
@@ -21,7 +22,6 @@ const formatDateToString = (date) => {
 
 const parseStringToDate = (dateString) => {
   if (!dateString) return null;
-  // Se usa T00:00:00 para asegurar que se parsee como fecha local
   return new Date(dateString + 'T00:00:00');
 };
 // --- FIN NUEVO ---
@@ -46,10 +46,18 @@ export default function ReservaModal({ isOpen, onClose, room }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalDays, setTotalDays] = useState(0);
 
-  // --- NUEVO: Estados para fechas ocupadas ---
+  // Estados para fechas ocupadas
   const [occupiedDates, setOccupiedDates] = useState([]);
   const [isLoadingDates, setIsLoadingDates] = useState(false);
+
+  // --- NUEVO: Estados para campos de pago simulados (no se guardan) ---
+  const [dni, setDni] = useState("");
+  const [cardType, setCardType] = useState("credito");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
   // --- FIN NUEVO ---
+
 
   // --- Lógica de autocompletado ---
   useEffect(() => {
@@ -65,26 +73,26 @@ export default function ReservaModal({ isOpen, onClose, room }) {
       setIsSubmitting(false);
       setTotalPrice(0);
       setTotalDays(0);
-      
-      // --- MODIFICADO: Resetear fechas ---
       setOccupiedDates([]);
+      
+      // --- NUEVO: Resetear campos simulados ---
+      setDni("");
+      setCardType("credito");
+      setCardNumber("");
+      setExpiryDate("");
+      setCvv("");
+      // --- FIN NUEVO ---
     }
   }, [isOpen, profile]); 
 
-  // --- MODIFICADO: useEffect para cargar fechas con RPC ---
+  // --- useEffect para cargar fechas (Sin cambios) ---
   useEffect(() => {
-    // Usamos room?.id para seguridad
     if (isOpen && room?.id) { 
       const fetchOccupiedDates = async () => {
         setIsLoadingDates(true);
-        
-        // Se llama a la función RPC en lugar de consultar la tabla
         const { data, error } = await supabase.rpc('get_fechas_ocupadas', {
           p_id_habitacion: room.id
         });
-
-        console.log("1. Datos crudos de Supabase (RPC):", data);
-        // --- FIN DEBUGGING ---
 
         if (error) {
           console.error("Error fetching dates via RPC:", error);
@@ -94,30 +102,21 @@ export default function ReservaModal({ isOpen, onClose, room }) {
           const intervals = data.map(reserva => {
             const start = parseStringToDate(reserva.fecha_inicio);
             const end = parseStringToDate(reserva.fecha_fin);
-            
-            // La fecha fin es el día de checkout, se bloquea HASTA el día anterior
             if (end) {
                 end.setDate(end.getDate() - 1); 
             }
             return { start, end };
           });
-          
-          // --- INICIO DEBUGGING ---
-          console.log("2. Intervalos para DatePicker:", intervals);
-          // --- FIN DEBUGGING ---
-
           setOccupiedDates(intervals);
         }
         setIsLoadingDates(false);
       };
-
       fetchOccupiedDates();
     }
-  }, [isOpen, room?.id]); // Depende de room.id (con optional chaining)
-  // --- FIN MODIFICADO ---
+  }, [isOpen, room?.id]);
 
 
-  // --- useEffect para calcular el precio total ---
+  // --- useEffect para calcular el precio total (Sin cambios) ---
   useEffect(() => {
     if (!fechaLlegada || !fechaSalida || !room) {
       setTotalDays(0);
@@ -125,14 +124,12 @@ export default function ReservaModal({ isOpen, onClose, room }) {
       return; 
     }
     
-    // --- MODIFICADO: Usar parser seguro ---
     const fechaInicio = parseStringToDate(fechaLlegada);
     const fechaFin = parseStringToDate(fechaSalida);
     
     if (fechaInicio < fechaFin) {
       const diffTime = Math.abs(fechaFin.getTime() - fechaInicio.getTime());
       const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-      
       setTotalDays(diffDays);
       setTotalPrice(diffDays * room.precio); 
       
@@ -150,21 +147,19 @@ export default function ReservaModal({ isOpen, onClose, room }) {
   // --- FIN: Todos los Hooks declarados ---
 
 
-
-  // --- MODIFICADO: Esta validación DEBE ir DESPUÉS de todos los Hooks ---
+  // --- Validación (Sin cambios) ---
   if (!isOpen || !room) {
     return null;
   }
-  // --- FIN MODIFICADO ---
 
-
-  // --- Lógica de Envío a BDD ---
+  // --- Lógica de Envío a BDD (Sin cambios en la lógica) ---
+  // Sigue guardando solo lo necesario (metodo_pago, monto, etc.)
+  // e ignora los nuevos estados (dni, cardNumber, etc.)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
-    // --- MODIFICADO: Usar parser seguro ---
     const fechaInicio = parseStringToDate(fechaLlegada);
     const fechaFin = parseStringToDate(fechaSalida);
 
@@ -175,41 +170,29 @@ export default function ReservaModal({ isOpen, onClose, room }) {
     }
 
     try {
-      // --- MODIFICADO: Doble chequeo de seguridad con RPC ---
-      // Volvemos a llamar a la RPC para obtener los datos MÁS RECIENTES
       const { data: existingBookingsData, error: checkError } = await supabase.rpc('get_fechas_ocupadas', {
         p_id_habitacion: room.id
       });
-      // --- FIN MODIFICADO ---
 
       if (checkError) {
         throw new Error("Error al verificar disponibilidad. Intente de nuevo.");
       }
 
-      // --- NUEVO: Lógica de superposición en JavaScript ---
       if (existingBookingsData) {
-        const newStart = fechaInicio; // Tu fecha de llegada (JS Date)
-        const newEnd = fechaFin;     // Tu fecha de salida (JS Date)
+        const newStart = fechaInicio;
+        const newEnd = fechaFin; 
 
         for (const reserva of existingBookingsData) {
           const existingStart = parseStringToDate(reserva.fecha_inicio);
           const existingEnd = parseStringToDate(reserva.fecha_fin);
-
-          // Lógica de superposición:
-          // (Mi reserva empieza ANTES de que termine una existente)
-          // Y (Mi reserva termina DESPUÉS de que empiece una existente)
           const overlap = newStart < existingEnd && newEnd > existingStart;
 
           if (overlap) {
-            // Si hay superposición, lanza el error
             throw new Error("¡Ups! Alguien acaba de reservar estas fechas. Por favor, selecciona otras.");
           }
         }
       }
-      // --- FIN NUEVO ---
 
-
-      // Calcular Precio Total
       const diffTime = Math.abs(fechaFin.getTime() - fechaInicio.getTime());
       const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
       const precioTotal = diffDays * room.precio; 
@@ -219,14 +202,13 @@ export default function ReservaModal({ isOpen, onClose, room }) {
         throw new Error("No se pudo identificar al usuario.");
       }
 
-      // Crear Reserva
       const { data: reservaData, error: reservaError } = await supabase
         .from('reservas')
         .insert({
           id_habitacion: room.id,
           id_usuario: userId,
-          fecha_inicio: fechaLlegada, // Se guarda el string 'YYYY-MM-DD'
-          fecha_fin: fechaSalida,      // Se guarda el string 'YYYY-MM-DD'
+          fecha_inicio: fechaLlegada,
+          fecha_fin: fechaSalida,   
           precio_total: precioTotal,
           estado_reserva: 'Pendiente', 
           estado_pago: 'Pendiente de confirmación', 
@@ -237,13 +219,12 @@ export default function ReservaModal({ isOpen, onClose, room }) {
       if (reservaError) throw new Error(reservaError.message);
       if (!reservaData) throw new Error("No se pudo crear la reserva.");
 
-      // Crear Pago
       const { error: pagoError } = await supabase
         .from('pagos')
         .insert({
           id_reserva: reservaData.id,
           monto: precioTotal,
-          metodo_pago: paymentMethod,
+          metodo_pago: paymentMethod, // <-- Solo se guarda este dato de pago
         });
 
       if (pagoError) throw new Error(pagoError.message);
@@ -255,60 +236,60 @@ export default function ReservaModal({ isOpen, onClose, room }) {
       console.error("Error en el proceso de reserva:", apiError.message);
       setError(apiError.message || "No se pudo completar la reserva.");
       
-      // --- NUEVO: Recargar fechas si hay error de superposición ---
       if (apiError.message.includes("¡Ups!")) {
-         // Forzamos la recarga del useEffect de fechas
          setOccupiedDates([]); 
       }
-      // --- FIN NUEVO ---
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // --- NUEVO DISEÑO TAILWIND ---
+  // --- DISEÑO TAILWIND MODIFICADO ---
   return (
     // 1. Fondo (Overlay)
+    // 1. Fondo (Overlay)
+  <div
+    className="fixed inset-0 z-20 flex items-center justify-center p-4 pt-10  bg-black/60 backdrop-blur-sm overflow-y-auto"
+  >
+    {/* 2. Contenido del Modal */}
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm "
+      className="
+        relative w-full max-w-xl sm:max-w-lg md:max-w-2xl 
+        max-h-[85vh] overflow-y-auto mt-20
+        p-6 pb-4 pt-4 rounded-lg shadow-lg 
+        bg-white/90 mb-4 
+      "
+      onClick={(e) => e.stopPropagation()}
     >
-      {/* 2. Contenido del Modal */}
-      <div
-        className="relative w-full max-w-xl p-6 pb-4 pt-4 rounded-lg shadow-lg bg-white/80"
-        onClick={(e) => e.stopPropagation()}
-      >
         <div className="flex" >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-800 font-extralight hover:text-red-800  cursor-pointer"
+          className="absolute top-4 right-4 text-gray-800 font-extralight hover:text-red-800 cursor-pointer"
           aria-label="Cerrar modal"
         >
           <X size={24} />
         </button>
         {/* Título */}
         <h2 className="text-2xl font-semibold text-black dark:text-black flex ">
-        <CalendarCheck className="mr-3 text-green-900"/>
-         Realizar Reserva
+         <CalendarCheck className="mr-3 text-green-900"/>
+          Realizar Reserva
         </h2>
 
         </div>
-        {/* Botón de Cerrar */}
 
-        {/* Label de la Habitación */}
-        <div className="mt-4 mb-6 p-3 border-black border-1  rounded-lg bg-white/70 ">
-          <p className=" text-black  font-medium">
+        {/* Label de la Habitación (Sin cambios) */}
+        <div className="mt-4 mb-6 p-3 border-black border-1 rounded-lg bg-white/70 ">
+          <p className=" text-black font-medium">
             Estás reservando: Habitación {room.numero}
           </p>
           <p className="text-sm text-black dark:text-gray-500">
             {room.tipo} (${room.precio} / noche)
           </p>
-          {/* --- NUEVO: Indicador de carga --- */}
           {isLoadingDates && (
             <p className="text-sm text-blue-600 animate-pulse">
               Cargando disponibilidad...
             </p>
           )}
-          {/* --- FIN NUEVO --- */}
         </div>
 
         {/* Formulario */}
@@ -325,12 +306,12 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 id="nombre"
                 value={nombre}
                 readOnly
-                className="mt-1 w-full rounded-md  bg-white/80 shadow-sm border-gray-100 hover:border-black border-1 pl-3 p-1"
+                className="mt-1 w-full rounded-md bg-white/80 shadow-sm border-gray-100 hover:border-black border-1 pl-3 p-1"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium  text-black">
+              <label htmlFor="email" className="block text-sm font-medium text-black">
                 Email
               </label>
               <input
@@ -338,7 +319,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 id="email"
                 value={email}
                 readOnly
-                className="mt-1 w-full rounded-md hover:border-black focus:ring-blue-500  border-gray-100 border-1 bg-white/80 shadow-sm  p-1 pl-2 "
+                className="mt-1 w-full rounded-md hover:border-black focus:ring-blue-500 border-gray-100 border-1 bg-white/80 shadow-sm p-1 pl-2 "
               />
             </div>
             
@@ -350,13 +331,30 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 type="tel"
                 id="telefono"
                 value={telefono}
-                onChange={(e) => setTelefono(e.target.value)} // Permitimos editar el teléfono si quiere
+                onChange={(e) => setTelefono(e.target.value)}
                 required
-                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500  bg-white/80 p-1 pl-2 hover:bg-gray-100  text-black"
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white/80 p-1 pl-2 hover:bg-gray-100 text-black"
               />
             </div>
 
-            {/* --- REEMPLAZO: Input de Fecha Llegada --- */}
+            {/* --- NUEVO: Campo DNI --- */}
+            <div>
+              <label htmlFor="dni" className="block text-sm font-medium text-black">
+                DNI
+              </label>
+              <input
+                type="text"
+                id="dni"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                required // Lo hacemos requerido para la simulación
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white/80 p-1 pl-2 hover:bg-gray-100 text-black"
+                placeholder="Ingrese su DNI"
+              />
+            </div>
+            {/* --- FIN NUEVO --- */}
+
+            {/* --- Campos de Fecha (Sin cambios) --- */}
             <div>
               <label htmlFor="fechaLlegada" className="block text-sm font-medium text-black">
                 Fecha de Llegada
@@ -371,13 +369,10 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 placeholderText="YYYY-MM-DD"
                 required
                 disabled={isLoadingDates}
-                // Copiamos las clases de tu input original
-                className="mt-1 w-full  rounded-md hover:border-black border-gray-100 border-1 shadow-sm bg-white/80 focus:border-blue-500 hover:bg-gray-100 focus:ring-blue-500 p-1 pl-2 "
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm bg-white/80 focus:border-blue-500 hover:bg-gray-100 focus:ring-blue-500 p-1 pl-2 "
               />
             </div>
-            {/* --- FIN REEMPLAZO --- */}
 
-            {/* --- REEMPLAZO: Input de Fecha Salida --- */}
             <div>
               <label htmlFor="fechaSalida" className="block text-sm font-medium text-black">
                 Fecha de Salida
@@ -387,7 +382,6 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 selected={parseStringToDate(fechaSalida)}
                 onChange={(date) => setFechaSalida(formatDateToString(date))}
                 excludeDateIntervals={occupiedDates}
-                // La fecha de salida debe ser 1 día después de la llegada
                 minDate={fechaLlegada 
                   ? new Date(parseStringToDate(fechaLlegada).getTime() + 86400000) 
                   : new Date()
@@ -395,25 +389,34 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 dateFormat="yyyy-MM-dd"
                 placeholderText="YYYY-MM-DD"
                 required
-                disabled={isLoadingDates || !fechaLlegada} // Deshabilitado si no hay fecha de llegada
-                // Copiamos las clases de tu input original
+                disabled={isLoadingDates || !fechaLlegada}
                 className="mt-1 w-full p-1 pl-2 rounded-md hover:border-black border-gray-100 border-1 shadow-sm hover:bg-gray-100 focus:border-blue-500 focus:ring-blue-500 text-black bg-white/80"
               />
             </div>
-            {/* --- FIN REEMPLAZO --- */}
+          </div>
+            
+          {/* --- NUEVO: Separador de Sección de Pago --- */}
+          <div className="mt-6 pt-4 border-t border-gray-400">
+             <h3 className="text-lg font-semibold text-black flex items-center">
+                <CreditCard className="mr-2 text-gray-700"/>
+                Datos de Pago (Simulación)
+             </h3>
+          </div>
+          {/* --- FIN NUEVO --- */}
 
-
-            {/* --- Comentarios y Pago (Sin cambios) --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            
+            {/* --- Medio de Pago (Sin cambios) --- */}
             <div className="md:col-span-2">
-              <label htmlFor="medioPago" className="block text-sm font-mediumtext-white">
-                Medio de Pago
+              <label htmlFor="medioPago" className="block text-sm font-medium text-black">
+                Seleccione Tarjeta (Este dato sí se guarda)
               </label>
               <select
                 id="medioPago"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 required
-                className="mt-1 w-full rounded-md  shadow-sm p-1 pl-2 cursor-pointer hover:border-black border-gray-100 border-1 focus:border-blue-500 focus:ring-blue-500 bg-white/80 text-black"
+                className="mt-1 w-full rounded-md shadow-sm p-1 pl-2 cursor-pointer hover:border-black border-gray-100 border-1 focus:border-blue-500 focus:ring-blue-500 bg-white/80 text-black"
               >
                 <option value="Visa">Tarjeta de crédito Visa</option>
                 <option value="Mastercard">Tarjeta de crédito Mastercard</option>
@@ -423,7 +426,64 @@ export default function ReservaModal({ isOpen, onClose, room }) {
               </select>
             </div>
 
+
+
+            {/* --- NUEVO: Número de Tarjeta --- */}
             <div className="md:col-span-2">
+              <label htmlFor="cardNumber" className="block text-sm font-medium text-black">
+                Número de Tarjeta
+              </label>
+              <input
+                type="text"
+                id="cardNumber"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                required
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white/80 p-1 pl-2 hover:bg-gray-100 text-black"
+                placeholder="0000 0000 0000 0000"
+                autoComplete="off"
+              />
+            </div>
+            {/* --- FIN NUEVO --- */}
+
+            {/* --- NUEVO: Vencimiento --- */}
+            <div>
+              <label htmlFor="expiryDate" className="block text-sm font-medium text-black">
+                Vencimiento
+              </label>
+              <input
+                type="text"
+                id="expiryDate"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                required
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white/80 p-1 pl-2 hover:bg-gray-100 text-black"
+                placeholder="MM/AA"
+                autoComplete="off"
+              />
+            </div>
+            {/* --- FIN NUEVO --- */}
+            
+            {/* --- NUEVO: CVV --- */}
+            <div>
+              <label htmlFor="cvv" className="block text-sm font-medium text-black">
+                CVV
+              </label>
+              <input
+                type="text"
+                id="cvv"
+                value={cvv}
+                onChange={(e) => setCvv(e.target.value)}
+                required
+                className="mt-1 w-full rounded-md hover:border-black border-gray-100 border-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white/80 p-1 pl-2 hover:bg-gray-100 text-black"
+                placeholder="123"
+                autoComplete="off"
+              />
+            </div>
+            {/* --- FIN NUEVO --- */}
+            
+            {/* --- Comentarios (Movido después del pago) --- */}
+            <div className="md:col-span-2 pt-4 border-t border-gray-400 mt-4">
               <label htmlFor="comentarios" className="block text-sm font-medium text-black">
                 Comentarios Adicionales
               </label>
@@ -432,15 +492,15 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                 rows="3"
                 value={comentarios}
                 onChange={(e) => setComentarios(e.target.value)}
-                className="mt-1 w-full rounded-md p-1 pl-2  shadow-sm focus:border-blue-500 focus:ring-blue-500 hover:border-black border-black border-1 text-black bg-white/70"
+                className="mt-1 w-full rounded-md p-1 pl-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 hover:border-black border-black border-1 text-black bg-white/70"
                 placeholder="¿Necesitas algo especial? (ej: cuna para bebé...)"
               ></textarea>
             </div>
           </div>
           
-          {/* <<< INICIO DE CAMBIO: Display de Precio Total >>> */}
+          {/* --- Display de Precio Total (Sin cambios) --- */}
           {totalPrice > 0 && (
-            <div className="mt-1 p-4 pt-1  pb-2 bg-blue-50 border border-blue-200 rounded-lg text-center ">
+            <div className="mt-1 p-4 pt-1 pb-2 bg-blue-50 border border-blue-200 rounded-lg text-center ">
               <p className="text-md font-semibold text-blue-800 ">
                 Monto Total: ${totalPrice}
               </p>
@@ -449,10 +509,9 @@ export default function ReservaModal({ isOpen, onClose, room }) {
               </p>
             </div>
           )}
-          {/* <<< FIN DE CAMBIO >>> */}
 
 
-          {/* Mensaje de Error */}
+          {/* Mensaje de Error (Sin cambios) */}
           {error && (
             <div className="mt-4 text-center rounded-md bg-red-50 p-3 dark:bg-red-900/20">
               <p className="text-sm font-medium text-red-700 dark:text-red-300">
@@ -461,13 +520,12 @@ export default function ReservaModal({ isOpen, onClose, room }) {
             </div>
           )}
 
-          {/* Botón de Envío */}
+          {/* Botón de Envío (Sin cambios) */}
           <div className="mt-6 text-right">
             <button
               type="submit"
-              // --- MODIFICADO: Deshabilitar si está cargando fechas ---
               disabled={isSubmitting || isLoadingDates}
-              className="inline-flex items-center cursor-pointer justify-center px-6 py-2  text-base font-medium rounded-md shadow-sm text-white bg-green-950 hover:bg-green-950/70 hover:border-1 hover:border-green-950/50  "
+              className="inline-flex items-center cursor-pointer justify-center px-6 py-2 text-base font-medium rounded-md shadow-sm text-white bg-green-950 hover:bg-green-950/70 hover:border-1 hover:border-green-950/50 "
             >
               {isSubmitting ? (
                 <>
@@ -475,7 +533,7 @@ export default function ReservaModal({ isOpen, onClose, room }) {
                   Reservando...
                 </>
               ) : (
-                "Confirmar Reserva"
+                "Confirmar Reserva y Pagar" // Texto actualizado del botón
               )}
             </button>
           </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "../components/ui/Button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, User,UserPlus } from "lucide-react";
 
 export default function UserCardAdmin({
   id,
@@ -15,7 +15,8 @@ export default function UserCardAdmin({
     <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-103 hover:shadow-lg bg-gray-50 text-black">
       <div className="p-6">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-serif text-2xl font-light text-foreground">
+          <h3 className="font-serif text-2xl font-light text-foreground flex">
+            <User className="text-xl text-gray-900 md:mr-3 sm:mr-2"/>
             {nombre} {apellido}
           </h3>
           <span className="rounded-full bg-[#1D3B2D] px-3 py-1 text-xs font-medium text-white">

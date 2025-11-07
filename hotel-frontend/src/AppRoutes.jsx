@@ -20,6 +20,7 @@ import AdminOperadores from "./pages/AdminOperadores";
 import HistorialReservas from "./pages/historialReservas";
 import CompraProveedores from "./pages/compras";
 import PanelOperador from "./pages/MenuOperador";
+import DashboardPage from "./pages/dashboard";
 
 function AppRoutes() {
     const { session, profile, loading } = useAuth();
@@ -54,6 +55,7 @@ function AppRoutes() {
             <Route path="habitaciones" element={<AdminHabitaciones />} />
             <Route path="operadores" element={<AdminOperadores />} />
             </Route>
+            <Route path="dashboard" element={<DashboardPage />} />
         </Route>
 
         {/* --- Operador --- */}

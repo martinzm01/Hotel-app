@@ -14,8 +14,7 @@ export default function RoomCardAdmin({
   onEdit,
   onDelete,
 }) {
-  //overflow-hidden rounded-lg border border-gray-300/90 bg-card  transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black
-  //group overflow-hidden rounded-lg border border-gray-200/90 bg-card transition-all hover:shadow-lg
+
   return (
     <article className="overflow-hidden rounded-lg border border-gray-300/90 bg-card mt-1 mb-1 transition-all duration-300 hover:scale-101 hover:shadow-lg bg-gray-50 text-black">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -34,7 +33,7 @@ export default function RoomCardAdmin({
             ? "bg-green-500/80 text-white"  // Verde
             : estado === "mantenimiento"
             ? "bg-gray-700/70 text-white"   // Gris
-            : "bg-red-500/80 text-white"     // Rojo para el resto (cancelada, ocupado)
+            : "bg-red-500/80 text-white"     // Rojo para el resto (cancelada)
             }`}
         >
           {estado}
@@ -43,7 +42,7 @@ export default function RoomCardAdmin({
 
       <div className="p-6">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-serif text-2xl font-light text-foreground">{name}</h3>
+          <h3 className="font-serif text-2xl  font-light text-foreground">{name}</h3>
           <span className="rounded-full bg-[#1D3B2D] px-3 py-1 text-xs font-medium text-white">
             {type}
           </span>
