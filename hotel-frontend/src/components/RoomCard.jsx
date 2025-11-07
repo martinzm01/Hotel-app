@@ -86,10 +86,7 @@ export default function RoomCard({
               : "No Disponible"}
           </Button>
 
-          {/* El botón "Ver Detalles" sigue igual */}
-          <Button asChild variant="outline">
-            <Link to={`/habitaciones/${id}`}>Ver Detalles</Link>
-          </Button>
+
         </div>
       </div>
     </article>
