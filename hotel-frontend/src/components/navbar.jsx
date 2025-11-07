@@ -47,7 +47,9 @@ export default function HotelNavbar() {
     } else if (profile?.rol === "administrador") {
       links.push({ href: "/admin", label: "Administración" }),
       links.push({ href: "/admin/habitaciones", label: "Habitaciones" }),
-      links.push({ href: "/admin/operadores", label: "Operadores" },
+      links.push({ href: "/admin/operadores", label: "Operadores" }),
+      links.push({ href: "/dashboard", label: "Dashboard" },
+
       );
     } else if (profile?.rol === "operador") {
       links.push(

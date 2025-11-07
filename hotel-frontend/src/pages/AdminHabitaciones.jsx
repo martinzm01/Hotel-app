@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../back_supabase/client"; 
 import RoomCardAdmin from "../components/RoomcardAdmin";
 import Button from "../components/ui/Button";
-import { Search } from "lucide-react"; // <-- 1. IMPORTAR EL ICONO DE BÚSQUEDA
+import { Search,BedDoubleIcon,Plus } from "lucide-react"; 
 export default function AdministracionPage() {
   const [rooms, setRooms] = useState([]); 
   const [editingRoom, setEditingRoom] = useState(null);
@@ -16,6 +16,7 @@ export default function AdministracionPage() {
     estado: "disponible", // Nuevo estado para el estado
 
   });
+
   const [newAmenity, setNewAmenity] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -301,7 +302,7 @@ const filteredRooms = rooms
                 <input
                   type="text"
                   placeholder="Buscar por n° o tipo..."
-                  className="w-full pl-10 pr-4 py-2 border border-white rounded-md focus:outline-none focus:ring-1 focus:ring-black hover:bg-gray-100/95 bg-white/95 text-black"
+                  className="w-full pl-10 pr-4 py-2   rounded-md focus:outline-none focus:ring- hover:bg-gray-100/40 focus:ring-border-gray-100 hover:border-gray-100 bg-white/30 text-white"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -310,16 +311,15 @@ const filteredRooms = rooms
               <select
                 className="
                           cursor-pointer transition-all duration-150
-                          hover:border-gray-100 hover:ring-1 hover:ring-gray-100 rounded-md w-full md:w-auto border
-                          border-gray-100  px-3 py-2 focus:outline-none  focus:ring-black bg-white/95 text-black"
+                          hover:border-gray-100 hover:ring-1 hover:ring-gray-100 rounded-md w-full md:w-auto 
+                            px-3 py-2 focus:outline-none  focus:ring-black bg-white/30 text-black"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option className="bg-white hover:bg-black" value="todos">Todos los estados</option>
                 <option value="disponible">Disponibles</option>
                 <option value="mantenimiento">Mantenimiento</option>
-                <option value="ocupado">Ocupadas</option> 
-                <option value="cancelada">Canceladas</option>
+                <option value="cerrada">Cerradas</option>
               </select>
 
               {/* Botón Nueva Habitación */}
@@ -364,9 +364,9 @@ const filteredRooms = rooms
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 ">
           <div className="bg-white rounded-lg max-w-lg w-full p-6 relative text-black">
-            
-            <h3 className="text-xl font-serif font-light mb-4">
-              {editingRoom ? "Editar Habitación" : "Nueva Habitación"}
+            <h3 className="text-xl flex font-medium mb-4 ">
+            <BedDoubleIcon className="flex text-indigo-700 md:mr-3 sm:mr-2 mb-2 " />
+                 {editingRoom ? " Editar Habitación" : "Nueva Habitación"}
             </h3>
             
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -375,7 +375,7 @@ const filteredRooms = rooms
                 type="number" 
                 name="name" 
                 placeholder="Número de la habitación"
-                className="w-full border rounded-md px-3 py-2 bg-white" 
+                className="w-full border rounded-lg px-3 py-2 bg-white hover:bg-gray-50 border-gray-300 hover:border-gray-700" 
                 value={formData.name}
                 onChange={handleInputChange}
                 required
@@ -385,7 +385,7 @@ const filteredRooms = rooms
                 type="text"
                 name="type"
                 placeholder="Tipo"
-                className="w-full border rounded-md bg-white px-3 py-2" 
+                className="w-full border rounded-lg bg-white  hover:border-gray-700 border-gray-300 px-3 py-2" 
                 value={formData.type}
                 onChange={handleInputChange}
                 required
@@ -395,7 +395,7 @@ const filteredRooms = rooms
                 type="number"
                 name="price"
                 placeholder="Precio por noche"
-                className="w-full border rounded-md px-3 py-2 bg-white" 
+                className="w-full border rounded-lg px-3 py-2 bg-white  hover:border-gray-700 border-gray-300" 
                 value={formData.price}
                 onChange={handleInputChange}
                 required
@@ -404,12 +404,12 @@ const filteredRooms = rooms
               <input
                   type="file" 
                   name="image"
-                  className="w-full border rounded-md px-3 py-2 bg-white text-gray-700
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-lg file:cursor-pointer file:border-0
-                           file:text-sm file:font-semibold
-                           file:bg-indigo-50 file:text-indigo-700
-                           hover:file:bg-indigo-100" 
+                  className="w-full border rounded-lg px-3 py-2 bg-white  hover:border-gray-700 border-gray-300 text-gray-700
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:cursor-pointer file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-indigo-50 file:text-indigo-700
+                            hover:file:bg-indigo-100" 
                   onChange={handleFileChange} 
                   disabled={isSubmitting}
                   accept="image/png, image/jpeg, image/webp"
@@ -417,7 +417,7 @@ const filteredRooms = rooms
               <textarea
                 name="description"
                 placeholder="Descripción"
-                className="w-full border rounded-md px-3 py-2 bg-white" 
+                className="w-full border rounded-lg px-3 border-gray-300   hover:border-gray-700 py-2 bg-white" 
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
@@ -427,7 +427,6 @@ const filteredRooms = rooms
 
               {/* Amenidades (sin cambios) */}
 
-
 {/* Selector de estado */}
               <div>
                 <label htmlFor="estado" className=" flex  text-sm font-medium text-gray-700">
@@ -436,23 +435,23 @@ const filteredRooms = rooms
                 <select
                   id="estado"
                   name="estado"
-                  className="w-full border rounded px-3 py-2 cursor-pointer"
+                  className="w-full rounded-lg  border-1 px-3 py-2 cursor-pointer  hover:border-gray-700 border-gray-300"
                   value={formData.estado}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
                 >
                   <option value="disponible">Disponible</option>
                   <option value="mantenimiento">Mantenimiento</option>
-                  <option value="ocupada">Ocupada</option>
+                  <option value="cerrada">Cerrada</option>
                 </select>
               </div>
 
               {/* Amenidades */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 ">
                 <input
                   type="text"
                   placeholder="Nueva amenidad"
-                  className="flex-1 border rounded px-3 py-2 "
+                  className="flex-1  hover:border-gray-700 border-gray-300 border-1 rounded-lg px-3 py-2 "
                   value={newAmenity}
                   onChange={(e) => setNewAmenity(e.target.value)}
                   onKeyDown={(e) => {
