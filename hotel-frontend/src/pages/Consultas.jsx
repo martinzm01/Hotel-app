@@ -331,9 +331,7 @@ export default function Consultas() {
                         <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Respuesta
                         </th>
-                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                          Respondida por
-                        </th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -368,19 +366,7 @@ export default function Consultas() {
 
             <hr className="my-8 border-gray-300" />
 
-            {/* --- Sección Mis Reservas (Mantenida) --- */}
-            <section className="mb-8">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 border-b border-gray-300 pb-2">
-                Mis Reservas
-              </h3>
-              {loadingReservas && <p className="text-gray-600">Cargando tus reservas...</p>}
-              {errorReservas && <p className="text-red-600">{errorReservas}</p>}
-              {/* ... (Aquí iría la lógica para mostrar las reservas, si la tenías) ... */}
-              {!loadingReservas && !errorReservas && reservas.length === 0 && (
-                <p className="text-gray-500">No tienes reservas.</p>
-              )}
-              {/* Aquí puedes mapear y mostrar `reservas` si lo deseas */}
-            </section>
+
 
             <hr className="my-8 border-gray-300" />
 
