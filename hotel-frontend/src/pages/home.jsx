@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import HotelHeader from "../components/Hotelheader";
 import Footer from "../components/footer";
+import "leaflet/dist/leaflet.css";
+import MapComponent from "../components/MapComponent";
 const carouselItems = [
   {
     title: "Restaurant Terracota",
@@ -312,16 +314,7 @@ export default function Home() {
               </div>
               {/* Columna Derecha: Mapa */}
               <div className="relative h-96 bg-gray-200 rounded-lg overflow-hidden">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28943.49529502177!2d-65.4201992864543!3d-24.78759282116423!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x941bc3b459a71cb9%3A0x74fc86b81836d832!2sSalta!5e0!3m2!1ses-419!2sar!4v1684172792071!5m2!1ses-419!2sar"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Hotel Myl Salta Location"
-                ></iframe>
+                  <MapComponent/>
               </div>
             </div>
           </div>
